@@ -195,6 +195,15 @@ const AMENITY_ICONS: Record<string, React.ReactNode> = {
 };
 
 
+interface StudentLead {
+  id: string;
+  name: string;
+  mobile: string;
+  branch: string;
+  verified: boolean;
+  createdAt: string;
+}
+
 export default function App() {
   const [view, setView] = useState<string>("home");
   const [pgs, setPgs] = useState<PGListing[]>([]);
@@ -203,6 +212,27 @@ export default function App() {
   const [loginErr, setLoginErr] = useState("");
   const [selectedPg, setSelectedPg] = useState<PGListing | null>(null);
   
+  // Registration & OTP Lead Verification State
+  const [isUserVerified, setIsUserVerified] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("dg_lead_verified") === "true";
+    }
+    return false;
+  });
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [regStep, setRegStep] = useState<"form" | "otp">("form");
+  const [regName, setRegName] = useState("");
+  const [regMobile, setRegMobile] = useState("");
+  const [regBranch, setRegBranch] = useState("DTU B.Tech");
+  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [enteredOtp, setEnteredOtp] = useState("");
+  const [otpToast, setOtpToast] = useState("");
+  const [regError, setRegError] = useState("");
+  const [pendingPgToOpen, setPendingPgToOpen] = useState<PGListing | null>(null);
+
+  const [studentLeads, setStudentLeads] = useState<StudentLead[]>([]);
+  const [adminTab, setAdminTab] = useState<"pgs" | "leads">("pgs");
+
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
   const [filterGender, setFilterGender] = useState("All");
@@ -245,6 +275,7 @@ export default function App() {
 
   useEffect(() => {
     loadPgs();
+    loadStudentLeads();
 
     // Initialize Chat Session ID
     let sId = localStorage.getItem("dg_chat_session_id");
@@ -354,6 +385,128 @@ export default function App() {
       }
     }
   }, [sessionId]);
+
+  async function loadStudentLeads() {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from("student_leads")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (error) throw error;
+        if (data) {
+          setStudentLeads(data.map((d: any) => ({
+            id: d.id || d.mobile,
+            name: d.name,
+            mobile: d.mobile,
+            branch: d.branch || "DTU Student",
+            verified: d.verified ?? true,
+            createdAt: d.created_at || new Date().toISOString()
+          })));
+          return;
+        }
+      } catch (e) {
+        console.warn("Supabase leads load fallback to local storage", e);
+      }
+    }
+    
+    try {
+      const localStr = localStorage.getItem("dg_student_leads");
+      if (localStr) setStudentLeads(JSON.parse(localStr));
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function handleSendOtp(e?: React.FormEvent) {
+    if (e) e.preventDefault();
+    const cleanName = regName.trim();
+    const cleanMobile = regMobile.trim();
+    if (!cleanName) {
+      setRegError("Please enter your full name.");
+      return;
+    }
+    if (!/^[6-9]\d{9}$/.test(cleanMobile)) {
+      setRegError("Please enter a valid 10-digit Indian mobile number.");
+      return;
+    }
+    setRegError("");
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    setGeneratedOtp(code);
+    setEnteredOtp("");
+    setRegStep("otp");
+    setOtpToast(`💬 SMS Sent to +91-${cleanMobile}: Your Dusra Ghar verification OTP code is ${code}`);
+  }
+
+  async function handleVerifyOtp(e?: React.FormEvent) {
+    if (e) e.preventDefault();
+    if (enteredOtp.trim() !== generatedOtp) {
+      setRegError("Invalid OTP. Please enter the 4-digit code shown in the message above.");
+      return;
+    }
+    setRegError("");
+
+    const newLead: StudentLead = {
+      id: "lead_" + Date.now(),
+      name: regName.trim(),
+      mobile: regMobile.trim(),
+      branch: regBranch || "DTU Student",
+      verified: true,
+      createdAt: new Date().toISOString()
+    };
+
+    // 1. Save in Supabase table "student_leads"
+    if (supabase) {
+      try {
+        await supabase.from("student_leads").insert([{
+          id: newLead.id,
+          name: newLead.name,
+          mobile: newLead.mobile,
+          branch: newLead.branch,
+          verified: true,
+          created_at: newLead.createdAt
+        }]);
+      } catch (err) {
+        console.warn("Failed to save lead to Supabase, saved locally", err);
+      }
+    }
+
+    // 2. Save in LocalStorage
+    try {
+      localStorage.setItem("dg_lead_verified", "true");
+      localStorage.setItem("dg_lead_name", newLead.name);
+      localStorage.setItem("dg_lead_mobile", newLead.mobile);
+
+      const localLeadsStr = localStorage.getItem("dg_student_leads");
+      let localLeadsArr: StudentLead[] = localLeadsStr ? JSON.parse(localLeadsStr) : [];
+      localLeadsArr.unshift(newLead);
+      localStorage.setItem("dg_student_leads", JSON.stringify(localLeadsArr));
+      setStudentLeads(localLeadsArr);
+    } catch (err) {
+      console.error(err);
+    }
+
+    setIsUserVerified(true);
+    setShowRegisterModal(false);
+    setOtpToast("");
+
+    if (pendingPgToOpen) {
+      setSelectedPg(pendingPgToOpen);
+      setPhotoIdx(0);
+      setPendingPgToOpen(null);
+    }
+  }
+
+  function handlePgCardClick(pg: PGListing) {
+    if (!isUserVerified && !isAdmin) {
+      setPendingPgToOpen(pg);
+      setRegStep("form");
+      setShowRegisterModal(true);
+    } else {
+      setSelectedPg(pg);
+      setPhotoIdx(0);
+    }
+  }
 
   async function loadPgs() {
     setLoading(true);
@@ -1358,7 +1511,7 @@ export default function App() {
                         flexDirection: "column",
                         height: "100%"
                       }}
-                      onClick={() => { setSelectedPg(pg); setPhotoIdx(0); }}
+                      onClick={() => handlePgCardClick(pg)}
                     >
                       {/* PHOTO PREVIEW */}
                       <div style={{ width: "100%", height: "180px", background: "var(--bg-main)", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
@@ -1399,14 +1552,37 @@ export default function App() {
                       {/* CONTENT */}
                       <div style={{ padding: "20px", display: "flex", flexDirection: "column", flexGrow: 1 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px", marginBottom: "6px" }}>
-                          <h4 className="font-display" style={{ fontWeight: "700", fontSize: "18px", color: "var(--text-main)", lineHeight: "1.3" }}>{pg.name}</h4>
+                          {!isUserVerified && !isAdmin ? (
+                            <div style={{ position: "relative", width: "100%" }}>
+                              <h4 className="font-display" style={{ fontWeight: "700", fontSize: "18px", color: "var(--text-main)", filter: "blur(6px)", userSelect: "none" }}>
+                                {pg.name}
+                              </h4>
+                              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
+                                <span style={{ fontSize: "11px", fontWeight: "700", color: "var(--accent-primary)", background: "var(--bg-main)", padding: "2px 8px", borderRadius: "4px", border: "1px solid var(--border-subtle)", boxShadow: "0 2px 6px rgba(0,0,0,0.3)" }}>
+                                  🔒 Register to Unlock Name
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            <h4 className="font-display" style={{ fontWeight: "700", fontSize: "18px", color: "var(--text-main)", lineHeight: "1.3" }}>
+                              {pg.name}
+                            </h4>
+                          )}
                         </div>
                         
-                        {/* ADDRESS */}
-                        <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "var(--text-sub)", fontSize: "12px", marginBottom: "14px" }}>
-                          <MapPin size={12} style={{ color: "var(--accent-primary)" }} />
-                          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pg.address}</span>
-                        </div>
+                        {/* ADDRESS (Blurred if unverified) */}
+                        {!isUserVerified && !isAdmin ? (
+                          <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--text-sub)", fontSize: "12px", marginBottom: "14px" }}>
+                            <MapPin size={12} style={{ color: "var(--accent-primary)" }} />
+                            <span style={{ filter: "blur(6px)", userSelect: "none" }}>{pg.address}</span>
+                            <span style={{ fontSize: "10px", color: "var(--accent-primary)", fontWeight: "700" }}>[Address Hidden]</span>
+                          </div>
+                        ) : (
+                          <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "var(--text-sub)", fontSize: "12px", marginBottom: "14px" }}>
+                            <MapPin size={12} style={{ color: "var(--accent-primary)" }} />
+                            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pg.address}</span>
+                          </div>
+                        )}
 
                         {/* PRICING BLOCK */}
                         <div style={{ display: "flex", alignItems: "flex-end", flexWrap: "wrap", gap: "6px", marginBottom: "14px" }}>
@@ -1515,80 +1691,160 @@ export default function App() {
             </div>
           )}
 
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", flexWrap: "wrap", gap: "16px" }}>
             <div>
               <h2 style={{ fontSize: "24px", fontWeight: "800", color: "#fff" }}>Control Center</h2>
-              <p style={{ color: "var(--text-secondary)", fontSize: "13px" }}>{pgs.length} Active Listings</p>
+              <p style={{ color: "var(--text-secondary)", fontSize: "13px" }}>{pgs.length} Active Listings · {studentLeads.length} Student Leads</p>
             </div>
-            <button 
-              className="btn-primary" 
-              style={{ padding: "10px 20px", borderRadius: "var(--radius-md)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", fontWeight: "700" }} 
-              onClick={openAdd}
-            >
-              <Plus size={16} />
-              Add New PG
-            </button>
+
+            {/* TAB SWITCHER */}
+            <div style={{ display: "flex", background: "rgba(255,255,255,0.04)", padding: "4px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <button 
+                style={{ padding: "8px 16px", borderRadius: "8px", border: "none", background: adminTab === "pgs" ? "var(--accent-primary)" : "transparent", color: adminTab === "pgs" ? "#0f172a" : "var(--text-sub)", fontWeight: "700", fontSize: "13px", cursor: "pointer" }}
+                onClick={() => setAdminTab("pgs")}
+              >
+                🏢 PG Listings ({pgs.length})
+              </button>
+              <button 
+                style={{ padding: "8px 16px", borderRadius: "8px", border: "none", background: adminTab === "leads" ? "var(--accent-primary)" : "transparent", color: adminTab === "leads" ? "#0f172a" : "var(--text-sub)", fontWeight: "700", fontSize: "13px", cursor: "pointer" }}
+                onClick={() => setAdminTab("leads")}
+              >
+                📋 Verified Student Leads ({studentLeads.length})
+              </button>
+            </div>
+
+            {adminTab === "pgs" && (
+              <button 
+                className="btn-primary" 
+                style={{ padding: "10px 20px", borderRadius: "var(--radius-md)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", fontWeight: "700" }} 
+                onClick={openAdd}
+              >
+                <Plus size={16} />
+                Add New PG
+              </button>
+            )}
           </div>
 
-          {pgs.length === 0 ? (
-            <div className="glass-panel" style={{ textAlign: "center", padding: "60px 20px", borderRadius: "var(--radius-lg)" }}>
-              <div style={{ fontSize: "40px", marginBottom: "12px" }}>📦</div>
-              <h3 style={{ fontSize: "18px", fontWeight: "700", marginBottom: "4px" }}>No PGs Listed Yet</h3>
-              <p style={{ color: "var(--text-secondary)", fontSize: "14px", marginBottom: "16px" }}>Start building your directory by adding your first listing.</p>
-              <button className="btn-primary" style={{ padding: "8px 16px", borderRadius: "var(--radius-sm)", border: "none", cursor: "pointer" }} onClick={openAdd}>Add First PG</button>
-            </div>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {pgs.map(pg => (
-                <div 
-                  key={pg.id} 
-                  className="glass-panel" 
-                  style={{ 
-                    borderRadius: "var(--radius-md)", 
-                    padding: "16px", 
-                    display: "flex", 
-                    justifyContent: "space-between", 
-                    alignItems: "center", 
-                    flexWrap: "wrap",
-                    gap: "16px"
-                  }}
-                >
-                  <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-                    {pg.photos?.length > 0 ? (
-                      <img src={pg.photos[0]} alt="" style={{ width: "64px", height: "64px", borderRadius: "10px", objectFit: "cover", border: "1px solid var(--card-border)" }} />
-                    ) : (
-                      <div style={{ width: "64px", height: "64px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", display: "flex", alignItems: "center", justifyItems: "center", fontSize: "28px", justifyContent: "center" }}>🏢</div>
-                    )}
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <h4 style={{ fontWeight: "700", color: "#fff", fontSize: "16px" }}>{pg.name}</h4>
-                        <span style={{ fontSize: "10px", fontWeight: "700", padding: "2px 8px", borderRadius: "100px", background: "rgba(255,255,255,0.06)", color: "var(--text-secondary)" }}>{pg.gender}</span>
+          {/* TAB 1: PGS DIRECTORY */}
+          {adminTab === "pgs" && (
+            <>
+              {pgs.length === 0 ? (
+                <div className="glass-panel" style={{ textAlign: "center", padding: "60px 20px", borderRadius: "var(--radius-lg)" }}>
+                  <div style={{ fontSize: "40px", marginBottom: "12px" }}>📦</div>
+                  <h3 style={{ fontSize: "18px", fontWeight: "700", marginBottom: "4px" }}>No PGs Listed Yet</h3>
+                  <p style={{ color: "var(--text-secondary)", fontSize: "14px", marginBottom: "16px" }}>Start building your directory by adding your first listing.</p>
+                  <button className="btn-primary" style={{ padding: "8px 16px", borderRadius: "var(--radius-sm)", border: "none", cursor: "pointer" }} onClick={openAdd}>Add First PG</button>
+                </div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {pgs.map(pg => (
+                    <div 
+                      key={pg.id} 
+                      className="glass-panel" 
+                      style={{ 
+                        borderRadius: "var(--radius-md)", 
+                        padding: "16px", 
+                        display: "flex", 
+                        justifyContent: "space-between", 
+                        alignItems: "center", 
+                        flexWrap: "wrap",
+                        gap: "16px"
+                      }}
+                    >
+                      <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                        {pg.photos?.length > 0 ? (
+                          <img src={pg.photos[0]} alt="" style={{ width: "64px", height: "64px", borderRadius: "10px", objectFit: "cover", border: "1px solid var(--card-border)" }} />
+                        ) : (
+                          <div style={{ width: "64px", height: "64px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", display: "flex", alignItems: "center", justifyItems: "center", fontSize: "28px", justifyContent: "center" }}>🏢</div>
+                        )}
+                        <div>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                            <h4 style={{ fontWeight: "700", color: "#fff", fontSize: "16px" }}>{pg.name}</h4>
+                            <span style={{ fontSize: "10px", fontWeight: "700", padding: "2px 8px", borderRadius: "100px", background: "rgba(255,255,255,0.06)", color: "var(--text-secondary)" }}>{pg.gender}</span>
+                          </div>
+                          <div style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "2px", display: "flex", alignItems: "center", gap: "4px" }}>
+                            <MapPin size={10} /> {pg.address}
+                          </div>
+                          <div style={{ fontSize: "13px", color: "var(--text-muted)", marginTop: "4px" }}>
+                            ₹{Number(pg.negotiablePrice).toLocaleString()}/mo · {pg.minTenure || "No min tenure"} · 📞 {pg.managerPhone}
+                          </div>
+                        </div>
                       </div>
-                      <div style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "2px", display: "flex", alignItems: "center", gap: "4px" }}>
-                        <MapPin size={10} /> {pg.address}
-                      </div>
-                      <div style={{ fontSize: "13px", color: "var(--text-muted)", marginTop: "4px" }}>
-                        ₹{Number(pg.negotiablePrice).toLocaleString()}/mo · {pg.minTenure || "No min tenure"} · 📞 {pg.managerPhone}
+                      <div style={{ display: "flex", gap: "10px" }}>
+                        <button 
+                          className="btn-secondary" 
+                          style={{ padding: "8px 14px", borderRadius: "var(--radius-sm)", fontSize: "13px", fontWeight: "600", display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }} 
+                          onClick={() => openEdit(pg)}
+                        >
+                          <Edit3 size={14} /> Edit
+                        </button>
+                        <button 
+                          style={{ background: "rgba(244,63,94,0.1)", border: "1px solid rgba(244,63,94,0.2)", color: "#fb7185", padding: "8px 14px", borderRadius: "var(--radius-sm)", fontSize: "13px", fontWeight: "600", display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }} 
+                          onClick={() => handleDelete(pg.id)}
+                        >
+                          <Trash2 size={14} /> Delete
+                        </button>
                       </div>
                     </div>
-                  </div>
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    <button 
-                      className="btn-secondary" 
-                      style={{ padding: "8px 14px", borderRadius: "var(--radius-sm)", fontSize: "13px", fontWeight: "600", display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }} 
-                      onClick={() => openEdit(pg)}
-                    >
-                      <Edit3 size={14} /> Edit
-                    </button>
-                    <button 
-                      style={{ background: "rgba(244,63,94,0.1)", border: "1px solid rgba(244,63,94,0.2)", color: "#fb7185", padding: "8px 14px", borderRadius: "var(--radius-sm)", fontSize: "13px", fontWeight: "600", display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }} 
-                      onClick={() => handleDelete(pg.id)}
-                    >
-                      <Trash2 size={14} /> Delete
-                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* TAB 2: VERIFIED STUDENT LEADS TABLE */}
+          {adminTab === "leads" && (
+            <div>
+              {studentLeads.length === 0 ? (
+                <div className="glass-panel" style={{ textAlign: "center", padding: "60px 20px", borderRadius: "var(--radius-lg)" }}>
+                  <div style={{ fontSize: "40px", marginBottom: "12px" }}>📱</div>
+                  <h3 style={{ fontSize: "18px", fontWeight: "700", marginBottom: "4px" }}>No Registered Student Leads Yet</h3>
+                  <p style={{ color: "var(--text-secondary)", fontSize: "14px" }}>When visitors register via OTP to unlock PG details, their names and mobile numbers will appear here.</p>
+                </div>
+              ) : (
+                <div className="glass-panel" style={{ borderRadius: "16px", overflow: "hidden", border: "1px solid var(--border-subtle)" }}>
+                  <div style={{ overflowX: "auto" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
+                      <thead>
+                        <tr style={{ background: "rgba(255,255,255,0.03)", borderBottom: "1px solid var(--border-subtle)", color: "var(--text-sub)", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          <th style={{ padding: "14px 16px" }}>Student Name</th>
+                          <th style={{ padding: "14px 16px" }}>Mobile Number</th>
+                          <th style={{ padding: "14px 16px" }}>Branch / Course</th>
+                          <th style={{ padding: "14px 16px" }}>Verification Status</th>
+                          <th style={{ padding: "14px 16px" }}>Registered Date</th>
+                          <th style={{ padding: "14px 16px" }}>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {studentLeads.map((lead, idx) => (
+                          <tr key={lead.id || idx} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                            <td style={{ padding: "14px 16px", fontWeight: "700", color: "#fff" }}>{lead.name}</td>
+                            <td style={{ padding: "14px 16px", color: "var(--accent-primary)", fontWeight: "700", fontFamily: "var(--font-data)" }}>{lead.mobile}</td>
+                            <td style={{ padding: "14px 16px", color: "var(--text-sub)" }}>{lead.branch}</td>
+                            <td style={{ padding: "14px 16px" }}>
+                              <span style={{ background: "rgba(16,185,129,0.15)", color: "var(--accent-green)", border: "1px solid rgba(16,185,129,0.3)", padding: "2px 8px", borderRadius: "100px", fontSize: "10px", fontWeight: "700" }}>
+                                Verified OTP ✓
+                              </span>
+                            </td>
+                            <td style={{ padding: "14px 16px", color: "var(--text-muted)", fontSize: "12px" }}>
+                              {new Date(lead.createdAt).toLocaleDateString()} {new Date(lead.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </td>
+                            <td style={{ padding: "14px 16px" }}>
+                              <a 
+                                href={`tel:${lead.mobile}`} 
+                                className="clay-button" 
+                                style={{ padding: "6px 12px", borderRadius: "6px", fontSize: "11px", fontWeight: "700", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "4px" }}
+                              >
+                                📞 Call Student
+                              </a>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
           )}
         </div>
@@ -2410,26 +2666,6 @@ export default function App() {
                     <LogOut size={13} /> Exit Admin
                   </button>
                 )}
-                
-                {/* Secret Lock switch for Yash */}
-                {!isChatAdmin && (
-                  <button 
-                    style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", padding: "4px" }}
-                    onClick={() => {
-                      const code = prompt("Enter Admin Passcode:");
-                      if (code === "yash2026") {
-                        setIsChatAdmin(true);
-                        setActiveChatTab("admin");
-                        alert("Admin mode activated. Hello Yash!");
-                      } else if (code !== null) {
-                        alert("Invalid passcode");
-                      }
-                    }}
-                    title="Admin Console Login"
-                  >
-                    <Lock size={14} />
-                  </button>
-                )}
               </div>
             </div>
 
@@ -2595,8 +2831,134 @@ export default function App() {
               )}
             </div>
 
-          </div>
+      {/* REGISTRATION & MOBILE OTP VERIFICATION MODAL */}
+      {showRegisterModal && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(11, 15, 25, 0.85)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+          <div className="clay-card animate-fade-in" style={{ maxWidth: "440px", width: "100%", padding: "32px", borderRadius: "24px", position: "relative" }}>
+            <button 
+              onClick={() => { setShowRegisterModal(false); setOtpToast(""); setRegError(""); }}
+              style={{ position: "absolute", top: "16px", right: "16px", background: "none", border: "none", color: "var(--text-sub)", cursor: "pointer" }}
+            >
+              <X size={20} />
+            </button>
 
+            {/* HEADER */}
+            <div style={{ textAlign: "center", marginBottom: "20px" }}>
+              <div style={{ fontSize: "36px", marginBottom: "8px" }}>🎓</div>
+              <h3 className="font-display" style={{ fontSize: "22px", fontWeight: "800", color: "var(--text-main)", marginBottom: "6px" }}>
+                Unlock Verified PGs & Contacts
+              </h3>
+              <p style={{ color: "var(--text-sub)", fontSize: "13px", lineHeight: "1.5" }}>
+                Quick 1-click mobile verification for DTU students. Get direct manager phone numbers and exact location addresses.
+              </p>
+            </div>
+
+            {/* SMS OTP TOAST ANNOUNCEMENT */}
+            {otpToast && (
+              <div style={{ background: "rgba(245, 158, 11, 0.15)", border: "1px solid rgba(245, 158, 11, 0.3)", borderRadius: "12px", padding: "12px 14px", fontSize: "13px", color: "var(--accent-primary)", fontWeight: "600", marginBottom: "18px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span>💬</span>
+                <div style={{ flex: 1 }}>{otpToast}</div>
+              </div>
+            )}
+
+            {/* ERROR MESSAGE */}
+            {regError && (
+              <div style={{ background: "rgba(244, 63, 94, 0.15)", border: "1px solid rgba(244, 63, 94, 0.3)", borderRadius: "10px", padding: "10px 12px", fontSize: "13px", color: "#fb7185", marginBottom: "16px" }}>
+                ⚠️ {regError}
+              </div>
+            )}
+
+            {regStep === "form" ? (
+              <form onSubmit={handleSendOtp} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--text-sub)", textTransform: "uppercase", marginBottom: "6px" }}>
+                    Full Name *
+                  </label>
+                  <input 
+                    type="text" 
+                    value={regName} 
+                    onChange={e => setRegName(e.target.value)} 
+                    placeholder="e.g. Yash Sharma" 
+                    required
+                    style={{ width: "100%", padding: "12px 14px", borderRadius: "10px", background: "var(--bg-main)", border: "1px solid var(--border-subtle)", color: "#fff", fontSize: "14px" }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--text-sub)", textTransform: "uppercase", marginBottom: "6px" }}>
+                    10-Digit Mobile Number *
+                  </label>
+                  <input 
+                    type="tel" 
+                    value={regMobile} 
+                    onChange={e => setRegMobile(e.target.value)} 
+                    placeholder="e.g. 9876543210" 
+                    maxLength={10}
+                    required
+                    style={{ width: "100%", padding: "12px 14px", borderRadius: "10px", background: "var(--bg-main)", border: "1px solid var(--border-subtle)", color: "#fff", fontSize: "14px" }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--text-sub)", textTransform: "uppercase", marginBottom: "6px" }}>
+                    Branch / Course
+                  </label>
+                  <input 
+                    type="text" 
+                    value={regBranch} 
+                    onChange={e => setRegBranch(e.target.value)} 
+                    placeholder="e.g. DTU B.Tech Freshers" 
+                    style={{ width: "100%", padding: "12px 14px", borderRadius: "10px", background: "var(--bg-main)", border: "1px solid var(--border-subtle)", color: "#fff", fontSize: "14px" }}
+                  />
+                </div>
+
+                <button 
+                  type="submit" 
+                  className="clay-button" 
+                  style={{ width: "100%", padding: "14px", marginTop: "6px", fontWeight: "800", fontSize: "15px" }}
+                >
+                  Send Verification OTP
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleVerifyOtp} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--text-sub)", textTransform: "uppercase", marginBottom: "6px" }}>
+                    Enter 4-Digit OTP Code *
+                  </label>
+                  <input 
+                    type="text" 
+                    value={enteredOtp} 
+                    onChange={e => setEnteredOtp(e.target.value)} 
+                    placeholder="e.g. 4829" 
+                    maxLength={4}
+                    required
+                    style={{ width: "100%", padding: "14px", borderRadius: "10px", background: "var(--bg-main)", border: "1px solid var(--accent-primary)", color: "#fff", fontSize: "20px", textAlign: "center", letterSpacing: "8px", fontWeight: "800" }}
+                  />
+                </div>
+
+                <button 
+                  type="submit" 
+                  className="clay-button" 
+                  style={{ width: "100%", padding: "14px", marginTop: "6px", fontWeight: "800", fontSize: "15px" }}
+                >
+                  Verify OTP & Unlock PGs
+                </button>
+
+                <button 
+                  type="button" 
+                  onClick={() => setRegStep("form")} 
+                  style={{ background: "none", border: "none", color: "var(--text-sub)", fontSize: "12px", cursor: "pointer", textDecoration: "underline", textAlign: "center", marginTop: "4px" }}
+                >
+                  ← Change Phone Number
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+          </div>
         </div>
       </section>
 
