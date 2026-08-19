@@ -946,11 +946,11 @@ export default function App() {
             <span style={{ fontSize: "22px" }}>🏠</span>
           </div>
           <div>
-            <div className="font-display" style={{ fontSize: "24px", fontWeight: "700", color: "var(--marigold)" }}>
+            <div className="font-display" style={{ fontSize: "24px", fontWeight: "700", color: "var(--accent-primary)" }}>
               Dusra Ghar
             </div>
-            <div style={{ fontSize: "11px", color: "var(--tulsi-green)", fontWeight: "700", display: "flex", alignItems: "center", gap: "4px", letterSpacing: "0.5px" }}>
-              <span style={{ display: "inline-block", width: "6px", height: "6px", borderRadius: "50%", background: "var(--tulsi-green)", animation: "pulse-glow 1.5s infinite" }}></span>
+            <div style={{ fontSize: "11px", color: "var(--accent-green)", fontWeight: "700", display: "flex", alignItems: "center", gap: "4px", letterSpacing: "0.5px" }}>
+              <span style={{ display: "inline-block", width: "6px", height: "6px", borderRadius: "50%", background: "var(--accent-green)", animation: "pulse-glow 1.5s infinite" }}></span>
               DTU PG FINDER — FOR FRESHERS
             </div>
           </div>
@@ -994,17 +994,17 @@ export default function App() {
           }}>
             {/* Left Content */}
             <div>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(232, 163, 61, 0.12)", border: "1px solid var(--border-warm)", borderRadius: "100px", padding: "6px 14px", marginBottom: "16px" }}>
-                <Sparkles size={13} style={{ color: "var(--marigold)" }} />
-                <span style={{ fontSize: "11px", fontWeight: "800", color: "var(--marigold)", textTransform: "uppercase", letterSpacing: "0.8px" }}>SKIP THE MIDDLEMAN</span>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(245, 158, 11, 0.12)", border: "1px solid var(--border-subtle)", borderRadius: "100px", padding: "6px 14px", marginBottom: "16px" }}>
+                <Sparkles size={13} style={{ color: "var(--accent-primary)" }} />
+                <span style={{ fontSize: "11px", fontWeight: "800", color: "var(--accent-primary)", textTransform: "uppercase", letterSpacing: "0.8px" }}>SKIP THE MIDDLEMAN</span>
               </div>
               
-              <h1 className="font-display" style={{ fontSize: "56px", fontWeight: "700", letterSpacing: "-1px", lineHeight: "1.05", marginBottom: "16px", color: "var(--diya-cream)" }}>
-                Find Your Vibe <em style={{ color: "var(--marigold)", fontStyle: "italic" }}>Near</em> DTU.
+              <h1 className="font-display" style={{ fontSize: "56px", fontWeight: "800", letterSpacing: "-1px", lineHeight: "1.05", marginBottom: "16px", color: "var(--text-main)" }}>
+                Find Your Vibe <em style={{ color: "var(--accent-primary)", fontStyle: "italic" }}>Near</em> DTU.
               </h1>
               
-              <p style={{ color: "var(--muted)", fontSize: "16px", marginBottom: "28px", lineHeight: "1.6" }}>
-                Skip the brokers and curfews. We map out real prices, video tours, and verified reviews from seniors so you get a place that feels like a real <strong style={{ color: "var(--diya-cream)" }}>Dusra Ghar</strong>.
+              <p style={{ color: "var(--text-sub)", fontSize: "16px", marginBottom: "28px", lineHeight: "1.6" }}>
+                Skip the brokers and curfews. We map out real prices, video tours, and verified reviews from seniors so you get a place that feels like a real <strong style={{ color: "var(--text-main)" }}>Dusra Ghar</strong>.
               </p>
               
               {/* SEARCH BAR */}
@@ -1015,7 +1015,7 @@ export default function App() {
                 alignItems: "center", 
                 gap: "10px"
               }}>
-                <Search size={18} style={{ color: "var(--muted)", flexShrink: 0 }} />
+                <Search size={18} style={{ color: "var(--text-muted)", flexShrink: 0 }} />
                 <input 
                   type="text" 
                   placeholder="Search PG Name, gate, street..." 
@@ -1025,7 +1025,7 @@ export default function App() {
                     background: "transparent", 
                     border: "none", 
                     outline: "none", 
-                    color: "var(--diya-cream)", 
+                    color: "var(--text-main)", 
                     fontSize: "14px", 
                     width: "100%",
                     padding: "8px 0"
@@ -1048,7 +1048,7 @@ export default function App() {
                   <SlidersHorizontal size={14} />
                   Filters
                   {(filterGender !== "All" || filterMin || filterMax || selectedVibeTags.length > 0) && (
-                    <span style={{ background: "var(--marigold)", width: "8px", height: "8px", borderRadius: "50%" }}></span>
+                    <span style={{ background: "var(--accent-primary)", width: "8px", height: "8px", borderRadius: "50%" }}></span>
                   )}
                 </button>
               </div>
@@ -1063,7 +1063,7 @@ export default function App() {
                 }}>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "16px", marginBottom: "20px" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Gender Vibe</label>
+                      <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Gender Vibe</label>
                       <select 
                         value={filterGender} 
                         onChange={e => setFilterGender(e.target.value)}
@@ -1071,20 +1071,20 @@ export default function App() {
                           width: "100%", 
                           padding: "8px 12px", 
                           borderRadius: "var(--radius-sm)", 
-                          background: "var(--ink-night)", 
-                          border: "1px solid var(--border-warm)", 
-                          color: "var(--diya-cream)", 
+                          background: "var(--bg-main)", 
+                          border: "1px solid var(--border-subtle)", 
+                          color: "var(--text-main)", 
                           fontSize: "13px" 
                         }}
                       >
-                        <option value="All" style={{ background: "var(--ink-night)" }}>All Students</option>
-                        <option value="Boys" style={{ background: "var(--ink-night)" }}>Boys Only</option>
-                        <option value="Girls" style={{ background: "var(--ink-night)" }}>Girls Only</option>
+                        <option value="All" style={{ background: "var(--bg-main)" }}>All Students</option>
+                        <option value="Boys" style={{ background: "var(--bg-main)" }}>Boys Only</option>
+                        <option value="Girls" style={{ background: "var(--bg-main)" }}>Girls Only</option>
                       </select>
                     </div>
                     
                     <div>
-                      <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Min Price (₹)</label>
+                      <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Min Price (₹)</label>
                       <input 
                         type="number" 
                         placeholder="Min ₹" 
@@ -1094,16 +1094,16 @@ export default function App() {
                           width: "100%", 
                           padding: "8px 12px", 
                           borderRadius: "var(--radius-sm)", 
-                          background: "var(--ink-night)", 
-                          border: "1px solid var(--border-warm)", 
-                          color: "var(--diya-cream)", 
+                          background: "var(--bg-main)", 
+                          border: "1px solid var(--border-subtle)", 
+                          color: "var(--text-main)", 
                           fontSize: "13px" 
                         }}
                       />
                     </div>
 
                     <div>
-                      <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Max Price (₹)</label>
+                      <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Max Price (₹)</label>
                       <input 
                         type="number" 
                         placeholder="Max ₹" 
@@ -1113,9 +1113,9 @@ export default function App() {
                           width: "100%", 
                           padding: "8px 12px", 
                           borderRadius: "var(--radius-sm)", 
-                          background: "var(--ink-night)", 
-                          border: "1px solid var(--border-warm)", 
-                          color: "var(--diya-cream)", 
+                          background: "var(--bg-main)", 
+                          border: "1px solid var(--border-subtle)", 
+                          color: "var(--text-main)", 
                           fontSize: "13px" 
                         }}
                       />
@@ -1123,7 +1123,7 @@ export default function App() {
                   </div>
 
                   <div style={{ marginBottom: "16px" }}>
-                    <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--muted)", textTransform: "uppercase", marginBottom: "8px", letterSpacing: "0.5px" }}>Vibe Filters (Amenities)</label>
+                    <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "8px", letterSpacing: "0.5px" }}>Vibe Filters (Amenities)</label>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                       {AMENITY_OPTIONS.map(a => {
                         const isSelected = selectedVibeTags.includes(a);
@@ -1141,9 +1141,9 @@ export default function App() {
                               fontWeight: "600",
                               cursor: "pointer",
                               transition: "all 0.2s",
-                              background: isSelected ? "var(--gradient-cta)" : "var(--surface-dark-raised)",
-                              border: `1px solid ${isSelected ? "var(--marigold)" : "var(--border-warm)"}`,
-                              color: isSelected ? "var(--ink-night)" : "var(--diya-cream)"
+                              background: isSelected ? "var(--gradient-cta)" : "var(--surface-raised)",
+                              border: `1px solid ${isSelected ? "var(--accent-primary)" : "var(--border-subtle)"}`,
+                              color: isSelected ? "#0f172a" : "var(--text-main)"
                             }}
                           >
                             {AMENITY_ICONS[a]}
@@ -1207,9 +1207,9 @@ export default function App() {
                     bottom: "14px", 
                     left: "14px", 
                     right: "14px", 
-                    background: "rgba(29, 23, 18, 0.88)", 
+                    background: "rgba(15, 23, 42, 0.9)", 
                     backdropFilter: "blur(8px)", 
-                    border: "1px solid var(--border-warm)", 
+                    border: "1px solid var(--border-subtle)", 
                     borderRadius: "14px", 
                     padding: "10px 14px", 
                     display: "flex", 
@@ -1217,8 +1217,8 @@ export default function App() {
                     justifyContent: "space-between" 
                   }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "var(--tulsi-green)", boxShadow: "0 0 8px var(--tulsi-green)", animation: "pulse-glow 1.5s infinite" }}></span>
-                      <span style={{ fontSize: "12px", fontWeight: "700", color: "var(--diya-cream)" }}>Verified Real DTU PG</span>
+                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "var(--accent-green)", boxShadow: "0 0 8px var(--accent-green)", animation: "pulse-glow 1.5s infinite" }}></span>
+                      <span style={{ fontSize: "12px", fontWeight: "700", color: "#ffffff" }}>Verified Real DTU PG</span>
                     </div>
                     <span className="badge-trust">Zero Brokerage</span>
                   </div>
@@ -1232,16 +1232,16 @@ export default function App() {
           {/* Core Advantages Banners ("Why Us") */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "20px" }}>
             {[
-              { icon: <TrendingDown size={24} style={{ color: "var(--tulsi-green)" }} />, title: "Zero Brokerage Fees", desc: "No middleman, no deposit cuts. Deal directly with PG managers and save up to ₹15,000 upfront." },
-              { icon: <Video size={24} style={{ color: "var(--marigold)" }} />, title: "100% Video Tours", desc: "Walk through rooms virtually with direct clips. Know the exact vibe of the house before you travel." },
-              { icon: <Users size={24} style={{ color: "var(--khapra-red)" }} />, title: "Student Verified Rates", desc: "We track and contrast actual building base rates vs negotiated student prices so you get the best deal." }
+              { icon: <TrendingDown size={24} style={{ color: "var(--accent-green)" }} />, title: "Zero Brokerage Fees", desc: "No middleman, no deposit cuts. Deal directly with PG managers and save up to ₹15,000 upfront." },
+              { icon: <Video size={24} style={{ color: "var(--accent-primary)" }} />, title: "100% Video Tours", desc: "Walk through rooms virtually with direct clips. Know the exact vibe of the house before you travel." },
+              { icon: <Users size={24} style={{ color: "var(--accent-secondary)" }} />, title: "Student Verified Rates", desc: "We track and contrast actual building base rates vs negotiated student prices so you get the best deal." }
             ].map((f, i) => (
               <div key={i} className="clay-card" style={{ padding: "24px" }}>
                 <div className="clay-icon" style={{ marginBottom: "16px" }}>
                   {f.icon}
                 </div>
-                <h4 className="font-display" style={{ fontWeight: "700", fontSize: "18px", color: "var(--diya-cream)", marginBottom: "8px" }}>{f.title}</h4>
-                <p style={{ color: "var(--muted)", fontSize: "14px", lineHeight: "1.5" }}>{f.desc}</p>
+                <h4 className="font-display" style={{ fontWeight: "700", fontSize: "18px", color: "var(--text-main)", marginBottom: "8px" }}>{f.title}</h4>
+                <p style={{ color: "var(--text-sub)", fontSize: "14px", lineHeight: "1.5" }}>{f.desc}</p>
               </div>
             ))}
           </div>
@@ -1254,21 +1254,21 @@ export default function App() {
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
               <div className="clay-icon" style={{ width: "40px", height: "40px", borderRadius: "12px" }}>
-                <Compass size={20} style={{ color: "var(--marigold)" }} />
+                <Compass size={20} style={{ color: "var(--accent-primary)" }} />
               </div>
-              <h3 className="font-display" style={{ fontSize: "24px", fontWeight: "700", color: "var(--diya-cream)" }}>
+              <h3 className="font-display" style={{ fontSize: "24px", fontWeight: "700", color: "var(--text-main)" }}>
                 DTU Neighborhood Vibe Matcher
               </h3>
             </div>
             
-            <p style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "24px" }}>
+            <p style={{ color: "var(--text-sub)", fontSize: "14px", marginBottom: "24px" }}>
               Select your room vibe and budget range to instantly pin matching PGs on our DTU campus map.
             </p>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "24px", marginBottom: "28px" }}>
               {/* Choose Vibe */}
               <div>
-                <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--muted)", textTransform: "uppercase", marginBottom: "10px", letterSpacing: "0.5px" }}>Choose room vibe</label>
+                <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "10px", letterSpacing: "0.5px" }}>Choose room vibe</label>
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                   {[
                     { id: "social", label: "🦋 Social Butterfly", sub: "WiFi, meals, social roommates" },
@@ -1282,8 +1282,8 @@ export default function App() {
                       className={`vibe-card-btn ${quizVibe === v.id ? "selected" : ""}`}
                     >
                       <div>
-                        <div style={{ fontWeight: "700", fontSize: "13px" }}>{v.label}</div>
-                        <div style={{ fontSize: "11px", opacity: 0.8, marginTop: "2px" }}>{v.sub}</div>
+                        <div className="vibe-title">{v.label}</div>
+                        <div className="vibe-sub">{v.sub}</div>
                       </div>
                     </button>
                   ))}
@@ -1292,7 +1292,7 @@ export default function App() {
 
               {/* Choose Budget */}
               <div>
-                <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--muted)", textTransform: "uppercase", marginBottom: "10px", letterSpacing: "0.5px" }}>Choose monthly budget</label>
+                <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "10px", letterSpacing: "0.5px" }}>Choose monthly budget</label>
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                   {[
                     { id: "low", label: "💸 Pocket Friendly", sub: "Under ₹8,000/month" },
@@ -1305,8 +1305,8 @@ export default function App() {
                       className={`vibe-card-btn ${quizBudget === b.id ? "selected" : ""}`}
                     >
                       <div>
-                        <div style={{ fontWeight: "700", fontSize: "13px" }}>{b.label}</div>
-                        <div style={{ fontSize: "11px", opacity: 0.8, marginTop: "2px" }}>{b.sub}</div>
+                        <div className="vibe-title">{b.label}</div>
+                        <div className="vibe-sub">{b.sub}</div>
                       </div>
                     </button>
                   ))}
@@ -1315,8 +1315,8 @@ export default function App() {
             </div>
 
             {quizMatchMsg && (
-              <div style={{ background: "rgba(76, 122, 94, 0.15)", border: "1px solid var(--tulsi-green)", borderRadius: "var(--radius-sm)", padding: "12px 16px", fontSize: "13px", color: "var(--diya-cream)", fontWeight: "600", marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px" }}>
-                <CheckCircle size={16} style={{ color: "var(--tulsi-green)" }} />
+              <div style={{ background: "rgba(16, 185, 129, 0.15)", border: "1px solid var(--accent-green)", borderRadius: "var(--radius-sm)", padding: "12px 16px", fontSize: "13px", color: "var(--text-main)", fontWeight: "600", marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <CheckCircle size={16} style={{ color: "var(--accent-green)" }} />
                 {quizMatchMsg}
               </div>
             )}
@@ -1334,12 +1334,12 @@ export default function App() {
           {/* LISTINGS RESULTS GRID */}
           <div ref={resultsRef} style={{ scrollMarginTop: "24px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-              <div style={{ color: "var(--muted)", fontSize: "15px", fontWeight: "600" }}>
-                ⚡ Showing <span className="price-mono" style={{ color: "var(--marigold)", fontWeight: "700" }}>{filtered.length}</span> verified PG{filtered.length !== 1 ? "s" : ""} near campus
+              <div style={{ color: "var(--text-sub)", fontSize: "15px", fontWeight: "600" }}>
+                ⚡ Showing <span className="price-mono" style={{ color: "var(--accent-primary)", fontWeight: "700" }}>{filtered.length}</span> verified PG{filtered.length !== 1 ? "s" : ""} near campus
               </div>
               {(filterGender !== "All" || filterMin || filterMax || selectedVibeTags.length > 0) && (
                 <button 
-                  style={{ background: "transparent", border: "none", color: "var(--marigold)", fontSize: "13px", fontWeight: "700", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}
+                  style={{ background: "transparent", border: "none", color: "var(--accent-primary)", fontSize: "13px", fontWeight: "700", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}
                   onClick={() => {
                     setFilterGender("All");
                     setFilterMin("");
@@ -1358,7 +1358,7 @@ export default function App() {
               <div className="clay-card" style={{ textAlign: "center", padding: "60px 20px" }}>
                 <div style={{ fontSize: "40px", marginBottom: "12px" }}>🔍</div>
                 <h3 className="font-display" style={{ fontSize: "20px", fontWeight: "700", marginBottom: "4px" }}>No PGs matching filters</h3>
-                <p style={{ color: "var(--muted)", fontSize: "14px" }}>Try removing filters or expanding your search budget.</p>
+                <p style={{ color: "var(--text-sub)", fontSize: "14px" }}>Try removing filters or expanding your search budget.</p>
               </div>
             ) : (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px" }}>
@@ -1373,7 +1373,7 @@ export default function App() {
                       key={pg.id} 
                       className="clay-card animate-fade-in"
                       style={{ 
-                        borderRadius: "20px", 
+                        borderRadius: "16px", 
                         overflow: "hidden", 
                         cursor: "pointer", 
                         display: "flex",
@@ -1383,7 +1383,7 @@ export default function App() {
                       onClick={() => { setSelectedPg(pg); setPhotoIdx(0); }}
                     >
                       {/* PHOTO PREVIEW */}
-                      <div style={{ width: "100%", height: "180px", background: "var(--ink-night)", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
+                      <div style={{ width: "100%", height: "180px", background: "var(--bg-main)", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
                         {pg.photos?.length > 0 ? (
                           <img 
                             src={pg.photos[0]} 
@@ -1396,7 +1396,7 @@ export default function App() {
                           <div style={{ fontSize: "40px", opacity: 0.6 }}>🏢</div>
                         )}
                         
-                        {/* GENDER BADGE (Solid ink-night at 85% opacity with diya-cream text) */}
+                        {/* GENDER BADGE */}
                         <div style={{ position: "absolute", top: "12px", left: "12px", display: "flex", flexWrap: "wrap", gap: "6px" }}>
                           <span className="badge-gender">
                             {pg.gender === "Both" ? "Co-ed" : pg.gender}
@@ -1406,12 +1406,12 @@ export default function App() {
                         {/* INFO BADGES BOTTOM */}
                         <div style={{ position: "absolute", bottom: "10px", right: "12px", display: "flex", gap: "6px" }}>
                           {pg.photos?.length > 1 && (
-                            <span style={{ background: "rgba(29, 23, 18, 0.9)", color: "var(--diya-cream)", fontSize: "10px", fontWeight: "700", borderRadius: "100px", padding: "3px 8px" }}>
+                            <span style={{ background: "rgba(15, 23, 42, 0.9)", color: "#ffffff", fontSize: "10px", fontWeight: "700", borderRadius: "100px", padding: "3px 8px" }}>
                               +{pg.photos.length - 1} Photos
                             </span>
                           )}
                           {(pg.videoBase64 || pg.videoLink) && (
-                            <span style={{ background: "var(--marigold)", color: "var(--ink-night)", fontSize: "10px", fontWeight: "800", borderRadius: "100px", padding: "3px 8px", display: "flex", alignItems: "center", gap: "4px" }}>
+                            <span style={{ background: "var(--accent-primary)", color: "#0f172a", fontSize: "10px", fontWeight: "800", borderRadius: "100px", padding: "3px 8px", display: "flex", alignItems: "center", gap: "4px" }}>
                               <Video size={10} /> Tour
                             </span>
                           )}
@@ -1421,24 +1421,24 @@ export default function App() {
                       {/* CONTENT */}
                       <div style={{ padding: "20px", display: "flex", flexDirection: "column", flexGrow: 1 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px", marginBottom: "6px" }}>
-                          <h4 className="font-display" style={{ fontWeight: "700", fontSize: "18px", color: "var(--diya-cream)", lineHeight: "1.3" }}>{pg.name}</h4>
+                          <h4 className="font-display" style={{ fontWeight: "700", fontSize: "18px", color: "var(--text-main)", lineHeight: "1.3" }}>{pg.name}</h4>
                         </div>
                         
                         {/* ADDRESS */}
-                        <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "var(--muted)", fontSize: "12px", marginBottom: "14px" }}>
-                          <MapPin size={12} style={{ color: "var(--marigold)" }} />
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "var(--text-sub)", fontSize: "12px", marginBottom: "14px" }}>
+                          <MapPin size={12} style={{ color: "var(--accent-primary)" }} />
                           <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pg.address}</span>
                         </div>
 
-                        {/* PRICING BLOCK (IBM Plex Mono Data font) */}
+                        {/* PRICING BLOCK */}
                         <div style={{ display: "flex", alignItems: "flex-end", flexWrap: "wrap", gap: "6px", marginBottom: "14px" }}>
-                          <span className="price-mono" style={{ fontSize: "20px", fontWeight: "700", color: "var(--marigold)" }}>
+                          <span className="price-mono" style={{ fontSize: "22px", fontWeight: "700", color: "var(--accent-primary)" }}>
                             ₹{nego.toLocaleString()}
                           </span>
-                          <span style={{ fontSize: "12px", color: "var(--muted)", fontWeight: "500", paddingBottom: "2px" }}>/mo</span>
+                          <span style={{ fontSize: "12px", color: "var(--text-sub)", fontWeight: "500", paddingBottom: "2px" }}>/mo</span>
                           {savings > 0 && (
                             <>
-                              <span className="price-mono" style={{ fontSize: "11px", color: "var(--muted)", textDecoration: "line-through", paddingBottom: "2px", marginLeft: "4px" }}>
+                              <span className="price-mono" style={{ fontSize: "11px", color: "var(--text-muted)", textDecoration: "line-through", paddingBottom: "2px", marginLeft: "4px" }}>
                                 ₹{actual.toLocaleString()}
                               </span>
                               <span className="badge-trust" style={{ fontSize: "10px", padding: "2px 6px", borderRadius: "4px", marginLeft: "4px" }}>
@@ -1449,20 +1449,20 @@ export default function App() {
                         </div>
 
                         {/* AMENITIES BADGES */}
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "auto", borderTop: "1px solid var(--border-warm)", paddingTop: "14px" }}>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "auto", borderTop: "1px solid var(--border-subtle)", paddingTop: "14px" }}>
                           {(pg.amenities || []).slice(0, 3).map(a => (
                             <span 
                               key={a} 
                               style={{ 
                                 fontSize: "11px", 
-                                color: "var(--muted)", 
-                                background: "var(--surface-dark-raised)", 
+                                color: "var(--text-sub)", 
+                                background: "var(--surface-raised)", 
                                 padding: "3px 10px", 
                                 borderRadius: "100px", 
                                 display: "inline-flex", 
                                 alignItems: "center", 
                                 gap: "4px",
-                                border: "1px solid var(--border-warm)"
+                                border: "1px solid var(--border-subtle)"
                               }}
                             >
                               {AMENITY_ICONS[a]}
@@ -1470,7 +1470,7 @@ export default function App() {
                             </span>
                           ))}
                           {(pg.amenities || []).length > 3 && (
-                            <span style={{ fontSize: "11px", color: "var(--muted)", background: "var(--surface-dark-raised)", padding: "3px 8px", borderRadius: "100px", border: "1px solid var(--border-warm)" }}>
+                            <span style={{ fontSize: "11px", color: "var(--text-muted)", background: "var(--surface-raised)", padding: "3px 8px", borderRadius: "100px", border: "1px solid var(--border-subtle)" }}>
                               +{(pg.amenities || []).length - 3}
                             </span>
                           )}
@@ -1487,10 +1487,10 @@ export default function App() {
 
           {/* STUDENT TESTIMONIALS SECTION */}
           <div style={{ textAlign: "left" }}>
-            <h3 className="font-display" style={{ fontSize: "24px", fontWeight: "700", color: "var(--diya-cream)", marginBottom: "6px", display: "flex", alignItems: "center", gap: "10px" }}>
+            <h3 className="font-display" style={{ fontSize: "24px", fontWeight: "700", color: "var(--text-main)", marginBottom: "6px", display: "flex", alignItems: "center", gap: "10px" }}>
               <span style={{ fontSize: "22px" }}>💬</span> Vetted by DTU Seniors
             </h3>
-            <p style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "24px" }}>
+            <p style={{ color: "var(--text-sub)", fontSize: "14px", marginBottom: "24px" }}>
               Here is what senior batch students have to say about finding accommodation through Dusra Ghar.
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px" }}>
@@ -1500,16 +1500,16 @@ export default function App() {
                 { name: "Aryan Goel", branch: "IT '24", quote: "Negotiating is stressful. Knowing the pre-negotiated rate before I called the manager gave me massive leverage. Essential for freshers!" }
               ].map((t, i) => (
                 <div key={i} className="clay-card" style={{ padding: "20px" }}>
-                  <p style={{ color: "var(--muted)", fontSize: "13px", fontStyle: "italic", lineHeight: "1.6", marginBottom: "16px" }}>
+                  <p style={{ color: "var(--text-sub)", fontSize: "13px", fontStyle: "italic", lineHeight: "1.6", marginBottom: "16px" }}>
                     "{t.quote}"
                   </p>
                   <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <div className="clay-icon" style={{ width: "36px", height: "36px", borderRadius: "50%", fontWeight: "800", fontSize: "14px", color: "var(--marigold)" }}>
+                    <div className="clay-icon" style={{ width: "36px", height: "36px", borderRadius: "50%", fontWeight: "800", fontSize: "14px", color: "var(--accent-primary)" }}>
                       {t.name[0]}
                     </div>
                     <div>
-                      <div style={{ fontWeight: "700", fontSize: "14px", color: "var(--diya-cream)" }}>{t.name}</div>
-                      <div style={{ fontSize: "11px", color: "var(--marigold)", fontWeight: "600" }}>DTU {t.branch}</div>
+                      <div style={{ fontWeight: "700", fontSize: "14px", color: "var(--text-main)" }}>{t.name}</div>
+                      <div style={{ fontSize: "11px", color: "var(--accent-primary)", fontWeight: "600" }}>DTU {t.branch}</div>
                     </div>
                   </div>
                 </div>
