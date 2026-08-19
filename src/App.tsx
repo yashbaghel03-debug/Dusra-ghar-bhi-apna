@@ -194,23 +194,6 @@ const AMENITY_ICONS: Record<string, React.ReactNode> = {
   "Hot Water": <Flame size={14} />
 };
 
-const ToranDivider: React.FC<{ style?: React.CSSProperties }> = ({ style }) => (
-  <svg className="toran-divider" viewBox="0 0 400 40" preserveAspectRatio="xMidYMin slice" xmlns="http://www.w3.org/2000/svg" style={style}>
-    <defs>
-      <pattern id="toran-repeat" width="40" height="40" patternUnits="userSpaceOnUse">
-        <path d="M0,0 Q20,18 40,0" fill="none" stroke="#4C7A5E" strokeWidth="2"/>
-        <circle cx="20" cy="14" r="6" fill="#E8A33D"/>
-        <circle cx="20" cy="14" r="6" fill="url(#marigold-shade)"/>
-        <path d="M14,22 Q20,32 26,22 Q20,28 14,22 Z" fill="#4C7A5E"/>
-      </pattern>
-      <radialGradient id="marigold-shade" cx="35%" cy="30%" r="70%">
-        <stop offset="0%" stopColor="#F5C066"/>
-        <stop offset="100%" stopColor="#C97C1F"/>
-      </radialGradient>
-    </defs>
-    <rect width="400" height="40" fill="url(#toran-repeat)"/>
-  </svg>
-);
 
 export default function App() {
   const [view, setView] = useState<string>("home");
@@ -918,8 +901,6 @@ export default function App() {
   return (
     <div style={{ maxWidth: "1200px", width: "100%", margin: "0 auto", padding: "0 24px 80px", display: "flex", flexDirection: "column", minHeight: "100vh", position: "relative" }}>
       
-      {/* Toran Garland Divider at Very Top */}
-      <ToranDivider style={{ marginBottom: "16px" }} />
 
       {/* 3D Isometric DTU Neighborhood Canvas Scene */}
       <ThreeDScene />
@@ -1191,8 +1172,6 @@ export default function App() {
                   position: "relative"
                 }}
               >
-                {/* Toran Garland Strip on top of photo frame */}
-                <ToranDivider style={{ height: "24px", opacity: 1 }} />
 
                 <div style={{ aspectRatio: "4/3", width: "100%", position: "relative" }}>
                   <img 
@@ -1227,7 +1206,6 @@ export default function App() {
             </div>
           </div>
 
-          <ToranDivider />
 
           {/* Core Advantages Banners ("Why Us") */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "20px" }}>
@@ -1483,7 +1461,6 @@ export default function App() {
             )}
           </div>
 
-          <ToranDivider />
 
           {/* STUDENT TESTIMONIALS SECTION */}
           <div style={{ textAlign: "left" }}>
