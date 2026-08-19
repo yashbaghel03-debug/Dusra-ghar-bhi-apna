@@ -1,19 +1,18 @@
 import React, { useEffect, useRef } from 'react';
 
-interface Shape3D {
-  x: number;
-  y: number;
-  z: number; // depth
-  rx: number;
-  ry: number;
-  rz: number;
-  vrx: number;
-  vry: number;
-  vrz: number;
-  size: number;
-  type: 'cube' | 'pyramid' | 'octahedron' | 'ring';
+interface IsoBuilding {
+  x: number; // grid x position
+  y: number; // grid y position
+  w: number; // width in grid units
+  h: number; // depth in grid units
+  height: number; // building height in px
   color: string;
-  glowColor: string;
+  roofColor: string;
+  accentColor: string;
+  name: string;
+  isPg?: boolean;
+  pinLabel?: string;
+  pinSub?: string;
 }
 
 export const ThreeDScene: React.FC = () => {
@@ -49,165 +48,317 @@ export const ThreeDScene: React.FC = () => {
     window.addEventListener('resize', handleResize);
     window.addEventListener('mousemove', handleMouseMove);
 
-    // Initialize 3D Floating Geometry
-    const colors = [
-      { fill: 'rgba(99, 102, 241, 0.15)', glow: 'rgba(99, 102, 241, 0.4)', stroke: 'rgba(165, 180, 252, 0.5)' },
-      { fill: 'rgba(168, 85, 247, 0.15)', glow: 'rgba(168, 85, 247, 0.4)', stroke: 'rgba(216, 180, 254, 0.5)' },
-      { fill: 'rgba(6, 182, 212, 0.15)', glow: 'rgba(6, 182, 212, 0.4)', stroke: 'rgba(165, 243, 252, 0.5)' },
-      { fill: 'rgba(16, 185, 129, 0.15)', glow: 'rgba(16, 185, 129, 0.4)', stroke: 'rgba(110, 231, 183, 0.5)' },
-    ];
-
-    const shapes: Shape3D[] = Array.from({ length: 18 }).map((_, i) => {
-      const c = colors[i % colors.length];
-      const types: ('cube' | 'pyramid' | 'octahedron' | 'ring')[] = ['cube', 'pyramid', 'octahedron', 'ring'];
-      return {
-        x: (Math.random() - 0.5) * width * 1.2,
-        y: (Math.random() - 0.5) * height * 1.2,
-        z: Math.random() * 400 + 100,
-        rx: Math.random() * Math.PI * 2,
-        ry: Math.random() * Math.PI * 2,
-        rz: Math.random() * Math.PI * 2,
-        vrx: (Math.random() - 0.5) * 0.012,
-        vry: (Math.random() - 0.5) * 0.012,
-        vrz: (Math.random() - 0.5) * 0.012,
-        size: Math.random() * 35 + 20,
-        type: types[Math.floor(Math.random() * types.length)],
-        color: c.stroke,
-        glowColor: c.glow,
-      };
-    });
-
-    // Particle Stars
-    const particles = Array.from({ length: 65 }).map(() => ({
+    // Warm Marigold Floating Particles
+    const particles = Array.from({ length: 30 }).map(() => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      size: Math.random() * 2 + 0.5,
-      alpha: Math.random() * 0.6 + 0.2,
-      speed: Math.random() * 0.3 + 0.1,
+      size: Math.random() * 3 + 1.5,
+      alpha: Math.random() * 0.5 + 0.2,
+      speedY: Math.random() * 0.4 + 0.1,
+      speedX: (Math.random() - 0.5) * 0.2,
     }));
 
-    // Rendering 3D math & projection
-    const fov = 400;
+    // Isometric Map Configuration
+    const tileW = 60;
+    const tileH = 30;
 
-    const project = (x: number, y: number, z: number) => {
-      const scale = fov / (fov + z);
-      return {
-        x: width / 2 + x * scale,
-        y: height / 2 + y * scale,
-        scale,
-      };
-    };
+    // Define DTU Neighborhood Isometric Buildings
+    const buildings: IsoBuilding[] = [
+      // DTU Main Campus Block
+      {
+        x: 0,
+        y: 0,
+        w: 3.5,
+        h: 2.5,
+        height: 120,
+        color: '#2A2119',
+        roofColor: '#332821',
+        accentColor: '#E8A33D',
+        name: 'DTU Main Campus',
+        pinLabel: '🎓 DTU Campus',
+        pinSub: 'Bawana Road',
+      },
+      // PG 1 - Near Gate 2
+      {
+        x: -2.5,
+        y: 1.5,
+        w: 1.2,
+        h: 1.2,
+        height: 80,
+        color: '#2F241C',
+        roofColor: '#3D2F24',
+        accentColor: '#4C7A5E',
+        name: 'Krishna Boys PG',
+        isPg: true,
+        pinLabel: '📍 Krishna PG',
+        pinSub: '₹7,500/mo',
+      },
+      // PG 2 - Rohini Sec 16
+      {
+        x: 2.2,
+        y: -1.8,
+        w: 1.4,
+        h: 1.2,
+        height: 95,
+        color: '#342920',
+        roofColor: '#423429',
+        accentColor: '#C1613B',
+        name: 'Royal Girls PG',
+        isPg: true,
+        pinLabel: '📍 Royal Girls PG',
+        pinSub: '₹9,200/mo',
+      },
+      // PG 3 - Shahbad Daulatpur Lane
+      {
+        x: -1.8,
+        y: -2.2,
+        w: 1.1,
+        h: 1.1,
+        height: 70,
+        color: '#2A2119',
+        roofColor: '#362B21',
+        accentColor: '#E8A33D',
+        name: 'Stanza Living DTU',
+        isPg: true,
+        pinLabel: '📍 Stanza House',
+        pinSub: '₹11,000/mo',
+      },
+      // PG 4 - Commercial Market Block
+      {
+        x: 1.5,
+        y: 2.2,
+        w: 1.5,
+        h: 1.0,
+        height: 65,
+        color: '#2D231B',
+        roofColor: '#3B2E24',
+        accentColor: '#E8A33D',
+        name: 'Sector 17 Market PG',
+        isPg: true,
+        pinLabel: '📍 Campus Heights',
+        pinSub: '₹8,500/mo',
+      },
+    ];
 
-    const rotateX = (x: number, y: number, z: number, angle: number) => {
-      const cos = Math.cos(angle);
-      const sin = Math.sin(angle);
-      return { x, y: y * cos - z * sin, z: y * sin + z * cos };
-    };
-
-    const rotateY = (x: number, y: number, z: number, angle: number) => {
-      const cos = Math.cos(angle);
-      const sin = Math.sin(angle);
-      return { x: x * cos + z * sin, y, z: -x * sin + z * cos };
-    };
-
-    const rotateZ = (x: number, y: number, z: number, angle: number) => {
-      const cos = Math.cos(angle);
-      const sin = Math.sin(angle);
-      return { x: x * cos - y * sin, y: x * sin + y * cos, z };
-    };
-
-    const drawCube = (size: number) => {
-      const s = size / 2;
-      const vertices = [
-        { x: -s, y: -s, z: -s },
-        { x: s, y: -s, z: -s },
-        { x: s, y: s, z: -s },
-        { x: -s, y: s, z: -s },
-        { x: -s, y: -s, z: s },
-        { x: s, y: -s, z: s },
-        { x: s, y: s, z: s },
-        { x: -s, y: s, z: s },
-      ];
-
-      const edges = [
-        [0, 1], [1, 2], [2, 3], [3, 0],
-        [4, 5], [5, 6], [6, 7], [7, 4],
-        [0, 4], [1, 5], [2, 6], [3, 7]
-      ];
-
-      return { vertices, edges };
-    };
+    let tick = 0;
 
     const render = () => {
+      tick += 0.02;
+
       // Smooth mouse lerp
-      mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.05;
-      mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.05;
+      mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.04;
+      mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.04;
 
       ctx.clearRect(0, 0, width, height);
 
-      // Draw Dynamic Mouse Cinematic Light Spotlight
+      // Warm Ambient Spotlight centered around mouse
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
-      const lightGrad = ctx.createRadialGradient(mx, my, 0, mx, my, 550);
-      lightGrad.addColorStop(0, 'rgba(99, 102, 241, 0.14)');
-      lightGrad.addColorStop(0.4, 'rgba(168, 85, 247, 0.06)');
+      const lightGrad = ctx.createRadialGradient(mx, my, 0, mx, my, 600);
+      lightGrad.addColorStop(0, 'rgba(232, 163, 61, 0.09)');
+      lightGrad.addColorStop(0.5, 'rgba(193, 97, 59, 0.03)');
       lightGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = lightGrad;
       ctx.fillRect(0, 0, width, height);
 
-      // Draw Background Particles
-      ctx.fillStyle = '#ffffff';
-      particles.forEach(p => {
-        p.y -= p.speed;
-        if (p.y < 0) p.y = height;
+      // Render Floating Marigold Petal Particles
+      particles.forEach((p) => {
+        p.y -= p.speedY;
+        p.x += p.speedX;
+        if (p.y < -10) p.y = height + 10;
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+
         ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = '#E8A33D';
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fill();
       });
       ctx.globalAlpha = 1.0;
 
-      // Draw 3D Shapes
-      shapes.forEach(shape => {
-        shape.rx += shape.vrx;
-        shape.ry += shape.vry;
-        shape.rz += shape.vrz;
+      // Isometric Map Center Position (Parallax with mouse)
+      const parallaxX = (mx - width / 2) * 0.03;
+      const parallaxY = (my - height / 2) * 0.03;
 
-        // Subtle mouse interaction wobble
-        const mouseOffsetX = (mx - width / 2) * 0.15;
-        const mouseOffsetY = (my - height / 2) * 0.15;
+      // Center map slightly to the right side of the screen on desktop
+      const mapOriginX = width > 900 ? width * 0.75 + parallaxX : width * 0.5 + parallaxX;
+      const mapOriginY = height * 0.48 + parallaxY;
 
-        const posX = shape.x + mouseOffsetX * (100 / shape.z);
-        const posY = shape.y + mouseOffsetY * (100 / shape.z);
+      // Helper function to project grid (x, y) to Screen (isoX, isoY)
+      const toScreen = (gx: number, gy: number, gz: number = 0) => {
+        const isoX = mapOriginX + (gx - gy) * (tileW / 2);
+        const isoY = mapOriginY + (gx + gy) * (tileH / 2) - gz;
+        return { x: isoX, y: isoY };
+      };
 
-        const geom = drawCube(shape.size);
-        
-        // Transform vertices
-        const projectedVertices = geom.vertices.map(v => {
-          let r = rotateX(v.x, v.y, v.z, shape.rx);
-          r = rotateY(r.x, r.y, r.z, shape.ry);
-          r = rotateZ(r.x, r.y, r.z, shape.rz);
+      // Draw Ground Grid & Road Lanes (DTU Main Road & Shahbad Lanes)
+      const gridSize = 6;
+      ctx.lineWidth = 1;
 
-          const proj = project(r.x + posX, r.y + posY, r.z + shape.z);
-          return proj;
-        });
+      // Grid tile lines
+      for (let x = -gridSize; x <= gridSize; x++) {
+        const p1 = toScreen(x, -gridSize);
+        const p2 = toScreen(x, gridSize);
+        ctx.strokeStyle = x === 0 ? 'rgba(232, 163, 61, 0.25)' : 'rgba(74, 59, 46, 0.2)';
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+      }
 
-        // Draw Glow Edges
-        ctx.shadowColor = shape.glowColor;
-        ctx.shadowBlur = 15;
-        ctx.strokeStyle = shape.color;
+      for (let y = -gridSize; y <= gridSize; y++) {
+        const p1 = toScreen(-gridSize, y);
+        const p2 = toScreen(gridSize, y);
+        ctx.strokeStyle = y === 0 ? 'rgba(232, 163, 61, 0.25)' : 'rgba(74, 59, 46, 0.2)';
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+      }
+
+      // Draw Main Road Ribbon (Bawana Road passing near DTU)
+      const roadStart = toScreen(-5, 0);
+      const roadEnd = toScreen(5, 0);
+      ctx.strokeStyle = 'rgba(232, 163, 61, 0.4)';
+      ctx.lineWidth = 12;
+      ctx.beginPath();
+      ctx.moveTo(roadStart.x, roadStart.y);
+      ctx.lineTo(roadEnd.x, roadEnd.y);
+      ctx.stroke();
+
+      // Road dashed line center
+      ctx.strokeStyle = '#1D1712';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 6]);
+      ctx.beginPath();
+      ctx.moveTo(roadStart.x, roadStart.y);
+      ctx.lineTo(roadEnd.x, roadEnd.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Sort buildings by depth (back-to-front rendering)
+      const sortedBuildings = [...buildings].sort((a, b) => a.x + a.y - (b.x + b.y));
+
+      // Draw Isometric 3D Buildings
+      sortedBuildings.forEach((b) => {
+        const bHeight = b.height;
+
+        // Base 4 corner points on ground
+        const p0 = toScreen(b.x, b.y);
+        const p1 = toScreen(b.x + b.w, b.y);
+        const p2 = toScreen(b.x + b.w, b.y + b.h);
+        const p3 = toScreen(b.x, b.y + b.h);
+
+        // Top 4 corner points elevated by bHeight
+        const t0 = toScreen(b.x, b.y, bHeight);
+        const t1 = toScreen(b.x + b.w, b.y, bHeight);
+        const t2 = toScreen(b.x + b.w, b.y + b.h, bHeight);
+        const t3 = toScreen(b.x, b.y + b.h, bHeight);
+
+        // Ground Soft Shadow
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+        ctx.beginPath();
+        ctx.moveTo(p0.x + 12, p0.y + 12);
+        ctx.lineTo(p1.x + 12, p1.y + 12);
+        ctx.lineTo(p2.x + 12, p2.y + 12);
+        ctx.lineTo(p3.x + 12, p3.y + 12);
+        ctx.closePath();
+        ctx.fill();
+
+        // Left Face
+        ctx.fillStyle = b.color;
+        ctx.beginPath();
+        ctx.moveTo(p0.x, p0.y);
+        ctx.lineTo(p3.x, p3.y);
+        ctx.lineTo(t3.x, t3.y);
+        ctx.lineTo(t0.x, t0.y);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.stroke();
+
+        // Right Face
+        ctx.fillStyle = '#3A2E24';
+        ctx.beginPath();
+        ctx.moveTo(p3.x, p3.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.lineTo(t2.x, t2.y);
+        ctx.lineTo(t3.x, t3.y);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.stroke();
+
+        // Roof Face
+        ctx.fillStyle = b.roofColor;
+        ctx.beginPath();
+        ctx.moveTo(t0.x, t0.y);
+        ctx.lineTo(t1.x, t1.y);
+        ctx.lineTo(t2.x, t2.y);
+        ctx.lineTo(t3.x, t3.y);
+        ctx.closePath();
+        ctx.fill();
+
+        // Roof Accent Border
+        ctx.strokeStyle = b.accentColor;
         ctx.lineWidth = 1.5;
+        ctx.stroke();
 
-        geom.edges.forEach(([i, j]) => {
-          const v1 = projectedVertices[i];
-          const v2 = projectedVertices[j];
+        // Windows lighting on faces
+        const numWindowsY = Math.floor(bHeight / 25);
+        for (let i = 1; i <= numWindowsY; i++) {
+          const winY = p0.y - (bHeight / (numWindowsY + 1)) * i;
+          ctx.fillStyle = i % 2 === 0 ? b.accentColor : '#F3E6D0';
+          ctx.globalAlpha = 0.6;
+          ctx.fillRect(p0.x + (p3.x - p0.x) * 0.4, winY, 5, 5);
+          ctx.fillRect(p3.x + (p2.x - p3.x) * 0.4, winY + (p2.y - p3.y) * 0.4, 5, 5);
+          ctx.globalAlpha = 1.0;
+        }
+
+        // Floating 3D Map Pin above Building
+        if (b.pinLabel) {
+          const floatOffset = Math.sin(tick * 2 + b.x) * 6;
+          const pinPos = {
+            x: t0.x + (t2.x - t0.x) * 0.5,
+            y: t0.y + (t2.y - t0.y) * 0.5 - 28 + floatOffset,
+          };
+
+          // Pin Stem Line
+          ctx.strokeStyle = b.accentColor;
+          ctx.lineWidth = 2;
           ctx.beginPath();
-          ctx.moveTo(v1.x, v1.y);
-          ctx.lineTo(v2.x, v2.y);
+          ctx.moveTo(pinPos.x, pinPos.y);
+          ctx.lineTo(pinPos.x, pinPos.y + 16);
           ctx.stroke();
-        });
 
-        ctx.shadowBlur = 0; // reset shadow
+          // Pin Badge Container
+          ctx.fillStyle = '#1D1712';
+          ctx.strokeStyle = b.accentColor;
+          ctx.lineWidth = 1.5;
+          const labelW = 110;
+          const labelH = 26;
+          const rx = pinPos.x - labelW / 2;
+          const ry = pinPos.y - labelH;
+
+          ctx.beginPath();
+          ctx.roundRect(rx, ry, labelW, labelH, 8);
+          ctx.fill();
+          ctx.stroke();
+
+          // Pin Badge Text
+          ctx.fillStyle = '#F3E6D0';
+          ctx.font = 'bold 10px Manrope, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(b.pinLabel, pinPos.x, ry + 9);
+
+          if (b.pinSub) {
+            ctx.fillStyle = b.accentColor;
+            ctx.font = 'bold 9px IBM Plex Mono, monospace';
+            ctx.fillText(b.pinSub, pinPos.x, ry + 19);
+          }
+        }
       });
 
       animId = requestAnimationFrame(render);

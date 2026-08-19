@@ -194,6 +194,24 @@ const AMENITY_ICONS: Record<string, React.ReactNode> = {
   "Hot Water": <Flame size={14} />
 };
 
+const ToranDivider: React.FC<{ style?: React.CSSProperties }> = ({ style }) => (
+  <svg className="toran-divider" viewBox="0 0 400 40" preserveAspectRatio="xMidYMin slice" xmlns="http://www.w3.org/2000/svg" style={style}>
+    <defs>
+      <pattern id="toran-repeat" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M0,0 Q20,18 40,0" fill="none" stroke="#4C7A5E" strokeWidth="2"/>
+        <circle cx="20" cy="14" r="6" fill="#E8A33D"/>
+        <circle cx="20" cy="14" r="6" fill="url(#marigold-shade)"/>
+        <path d="M14,22 Q20,32 26,22 Q20,28 14,22 Z" fill="#4C7A5E"/>
+      </pattern>
+      <radialGradient id="marigold-shade" cx="35%" cy="30%" r="70%">
+        <stop offset="0%" stopColor="#F5C066"/>
+        <stop offset="100%" stopColor="#C97C1F"/>
+      </radialGradient>
+    </defs>
+    <rect width="400" height="40" fill="url(#toran-repeat)"/>
+  </svg>
+);
+
 export default function App() {
   const [view, setView] = useState<string>("home");
   const [pgs, setPgs] = useState<PGListing[]>([]);
@@ -900,10 +918,13 @@ export default function App() {
   return (
     <div style={{ maxWidth: "1200px", width: "100%", margin: "0 auto", padding: "0 24px 80px", display: "flex", flexDirection: "column", minHeight: "100vh", position: "relative" }}>
       
-      {/* Neo-Futuristic Ambient 3D Scene */}
+      {/* Toran Garland Divider at Very Top */}
+      <ToranDivider style={{ marginBottom: "16px" }} />
+
+      {/* 3D Isometric DTU Neighborhood Canvas Scene */}
       <ThreeDScene />
 
-      {/* Background blobs for layered depth */}
+      {/* Background blobs for warm ambient light */}
       <div className="bg-blobs-container">
         <div className="bg-blob blob-1"></div>
         <div className="bg-blob blob-2"></div>
@@ -911,34 +932,25 @@ export default function App() {
       </div>
 
       {/* HEADER */}
-      <header className="glass-panel" style={{ 
+      <header className="clay-card" style={{ 
         display: "flex", 
         justifyContent: "space-between", 
         alignItems: "center", 
         padding: "16px 24px", 
-        borderRadius: "0 0 24px 24px", 
+        borderRadius: "0 0 20px 20px", 
         marginBottom: "32px",
         borderTop: "none"
       }}>
         <div onClick={() => setView("home")} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "12px" }}>
-          <div style={{ 
-            background: "linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)", 
-            width: "44px", 
-            height: "44px", 
-            borderRadius: "12px", 
-            display: "flex", 
-            alignItems: "center", 
-            justifyContent: "center",
-            boxShadow: "0 0 15px rgba(99,102,241,0.4)"
-          }}>
+          <div className="clay-icon" style={{ width: "44px", height: "44px" }}>
             <span style={{ fontSize: "22px" }}>🏠</span>
           </div>
           <div>
-            <div style={{ fontSize: "22px", fontWeight: "800", letterSpacing: "-0.5px", background: "linear-gradient(90deg, #f8fafc 0%, #a855f7 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            <div className="font-display" style={{ fontSize: "24px", fontWeight: "700", color: "var(--marigold)" }}>
               Dusra Ghar
             </div>
-            <div style={{ fontSize: "11px", color: "var(--accent-green)", fontWeight: "700", display: "flex", alignItems: "center", gap: "4px" }}>
-              <span style={{ display: "inline-block", width: "6px", height: "6px", borderRadius: "50%", background: "var(--accent-green)", animation: "pulse-glow 1.5s infinite" }}></span>
+            <div style={{ fontSize: "11px", color: "var(--tulsi-green)", fontWeight: "700", display: "flex", alignItems: "center", gap: "4px", letterSpacing: "0.5px" }}>
+              <span style={{ display: "inline-block", width: "6px", height: "6px", borderRadius: "50%", background: "var(--tulsi-green)", animation: "pulse-glow 1.5s infinite" }}></span>
               DTU PG FINDER — FOR FRESHERS
             </div>
           </div>
@@ -948,15 +960,15 @@ export default function App() {
           {isAdmin && (
             <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
               <button 
-                className="btn-primary" 
-                style={{ padding: "8px 18px", borderRadius: "var(--radius-md)", cursor: "pointer", fontSize: "13px", fontWeight: "600", border: "none" }}
+                className="clay-button" 
+                style={{ padding: "8px 18px", fontSize: "13px" }}
                 onClick={() => setView("admin")}
               >
                 Dashboard
               </button>
               <button 
                 className="btn-secondary"
-                style={{ padding: "8px 18px", borderRadius: "var(--radius-md)", cursor: "pointer", fontSize: "13px", fontWeight: "600", display: "flex", alignItems: "center", gap: "6px" }}
+                style={{ padding: "8px 18px", borderRadius: "14px", cursor: "pointer", fontSize: "13px", fontWeight: "600", display: "flex", alignItems: "center", gap: "6px" }}
                 onClick={() => { setIsAdmin(false); setView("home"); window.location.hash = ""; }}
               >
                 <LogOut size={13} />
@@ -969,7 +981,7 @@ export default function App() {
 
       {/* HOME VIEW */}
       {view === "home" && (
-        <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "56px" }}>
+        <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "48px" }}>
           
           {/* 2-COLUMN HERO LAYOUT */}
           <div style={{ 
@@ -977,33 +989,33 @@ export default function App() {
             gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", 
             gap: "40px", 
             alignItems: "center",
-            marginTop: "16px",
+            marginTop: "8px",
             textAlign: "left"
           }}>
             {/* Left Content */}
             <div>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.18)", borderRadius: "100px", padding: "6px 14px", marginBottom: "16px" }}>
-                <Sparkles size={13} style={{ color: "var(--primary)" }} />
-                <span style={{ fontSize: "11px", fontWeight: "800", color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.8px" }}>SKIP THE MIDDLEMAN</span>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(232, 163, 61, 0.12)", border: "1px solid var(--border-warm)", borderRadius: "100px", padding: "6px 14px", marginBottom: "16px" }}>
+                <Sparkles size={13} style={{ color: "var(--marigold)" }} />
+                <span style={{ fontSize: "11px", fontWeight: "800", color: "var(--marigold)", textTransform: "uppercase", letterSpacing: "0.8px" }}>SKIP THE MIDDLEMAN</span>
               </div>
-              <h1 style={{ fontSize: "52px", fontWeight: "800", letterSpacing: "-2px", lineHeight: "1.05", marginBottom: "16px", background: "linear-gradient(135deg, #ffffff 40%, #a855f7 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                Find Your Vibe Near DTU.
+              
+              <h1 className="font-display" style={{ fontSize: "56px", fontWeight: "700", letterSpacing: "-1px", lineHeight: "1.05", marginBottom: "16px", color: "var(--diya-cream)" }}>
+                Find Your Vibe <em style={{ color: "var(--marigold)", fontStyle: "italic" }}>Near</em> DTU.
               </h1>
-              <p style={{ color: "var(--text-secondary)", fontSize: "16px", marginBottom: "28px", lineHeight: "1.6" }}>
-                Skip the brokers and curfews. We map out real prices, video tours, and verified reviews from seniors so you get a place that feels like a real *Dusra Ghar*.
+              
+              <p style={{ color: "var(--muted)", fontSize: "16px", marginBottom: "28px", lineHeight: "1.6" }}>
+                Skip the brokers and curfews. We map out real prices, video tours, and verified reviews from seniors so you get a place that feels like a real <strong style={{ color: "var(--diya-cream)" }}>Dusra Ghar</strong>.
               </p>
               
               {/* SEARCH BAR */}
-              <div className="glass-panel" style={{ 
+              <div className="clay-card" style={{ 
                 borderRadius: "100px", 
                 padding: "6px 8px 6px 20px", 
                 display: "flex", 
                 alignItems: "center", 
-                boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
-                gap: "10px",
-                border: "1px solid rgba(255,255,255,0.08)"
+                gap: "10px"
               }}>
-                <Search size={18} style={{ color: "var(--text-muted)", flexShrink: 0 }} />
+                <Search size={18} style={{ color: "var(--muted)", flexShrink: 0 }} />
                 <input 
                   type="text" 
                   placeholder="Search PG Name, gate, street..." 
@@ -1013,7 +1025,7 @@ export default function App() {
                     background: "transparent", 
                     border: "none", 
                     outline: "none", 
-                    color: "var(--text-primary)", 
+                    color: "var(--diya-cream)", 
                     fontSize: "14px", 
                     width: "100%",
                     padding: "8px 0"
@@ -1036,23 +1048,22 @@ export default function App() {
                   <SlidersHorizontal size={14} />
                   Filters
                   {(filterGender !== "All" || filterMin || filterMax || selectedVibeTags.length > 0) && (
-                    <span style={{ background: "var(--primary)", width: "8px", height: "8px", borderRadius: "50%" }}></span>
+                    <span style={{ background: "var(--marigold)", width: "8px", height: "8px", borderRadius: "50%" }}></span>
                   )}
                 </button>
               </div>
               
               {/* DETAILED FILTERS DROPDOWN */}
               {showFilters && (
-                <div className="glass-panel animate-fade-in" style={{ 
+                <div className="clay-card animate-fade-in" style={{ 
                   borderRadius: "var(--radius-lg)", 
                   padding: "20px", 
                   marginTop: "16px",
-                  textAlign: "left",
-                  boxShadow: "0 15px 35px rgba(0,0,0,0.3)"
+                  textAlign: "left"
                 }}>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "16px", marginBottom: "20px" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--text-secondary)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Gender Vibe</label>
+                      <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Gender Vibe</label>
                       <select 
                         value={filterGender} 
                         onChange={e => setFilterGender(e.target.value)}
@@ -1060,20 +1071,20 @@ export default function App() {
                           width: "100%", 
                           padding: "8px 12px", 
                           borderRadius: "var(--radius-sm)", 
-                          background: "rgba(255,255,255,0.05)", 
-                          border: "1px solid rgba(255,255,255,0.1)", 
-                          color: "var(--text-primary)", 
+                          background: "var(--ink-night)", 
+                          border: "1px solid var(--border-warm)", 
+                          color: "var(--diya-cream)", 
                           fontSize: "13px" 
                         }}
                       >
-                        <option value="All" style={{ background: "var(--bg)" }}>All Students</option>
-                        <option value="Boys" style={{ background: "var(--bg)" }}>Boys Only</option>
-                        <option value="Girls" style={{ background: "var(--bg)" }}>Girls Only</option>
+                        <option value="All" style={{ background: "var(--ink-night)" }}>All Students</option>
+                        <option value="Boys" style={{ background: "var(--ink-night)" }}>Boys Only</option>
+                        <option value="Girls" style={{ background: "var(--ink-night)" }}>Girls Only</option>
                       </select>
                     </div>
                     
                     <div>
-                      <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--text-secondary)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Min Price (₹)</label>
+                      <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Min Price (₹)</label>
                       <input 
                         type="number" 
                         placeholder="Min ₹" 
@@ -1083,16 +1094,16 @@ export default function App() {
                           width: "100%", 
                           padding: "8px 12px", 
                           borderRadius: "var(--radius-sm)", 
-                          background: "rgba(255,255,255,0.05)", 
-                          border: "1px solid rgba(255,255,255,0.1)", 
-                          color: "var(--text-primary)", 
+                          background: "var(--ink-night)", 
+                          border: "1px solid var(--border-warm)", 
+                          color: "var(--diya-cream)", 
                           fontSize: "13px" 
                         }}
                       />
                     </div>
 
                     <div>
-                      <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--text-secondary)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Max Price (₹)</label>
+                      <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--muted)", textTransform: "uppercase", marginBottom: "6px", letterSpacing: "0.5px" }}>Max Price (₹)</label>
                       <input 
                         type="number" 
                         placeholder="Max ₹" 
@@ -1102,9 +1113,9 @@ export default function App() {
                           width: "100%", 
                           padding: "8px 12px", 
                           borderRadius: "var(--radius-sm)", 
-                          background: "rgba(255,255,255,0.05)", 
-                          border: "1px solid rgba(255,255,255,0.1)", 
-                          color: "var(--text-primary)", 
+                          background: "var(--ink-night)", 
+                          border: "1px solid var(--border-warm)", 
+                          color: "var(--diya-cream)", 
                           fontSize: "13px" 
                         }}
                       />
@@ -1112,7 +1123,7 @@ export default function App() {
                   </div>
 
                   <div style={{ marginBottom: "16px" }}>
-                    <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--text-secondary)", textTransform: "uppercase", marginBottom: "8px", letterSpacing: "0.5px" }}>Vibe Filters (Amenities)</label>
+                    <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--muted)", textTransform: "uppercase", marginBottom: "8px", letterSpacing: "0.5px" }}>Vibe Filters (Amenities)</label>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                       {AMENITY_OPTIONS.map(a => {
                         const isSelected = selectedVibeTags.includes(a);
@@ -1124,15 +1135,15 @@ export default function App() {
                               display: "flex",
                               alignItems: "center",
                               gap: "6px",
-                              padding: "6px 12px",
-                              borderRadius: "100px",
+                              padding: "6px 14px",
+                              borderRadius: "999px",
                               fontSize: "12px",
-                              fontWeight: "500",
+                              fontWeight: "600",
                               cursor: "pointer",
                               transition: "all 0.2s",
-                              background: isSelected ? "var(--primary)" : "rgba(255,255,255,0.03)",
-                              border: `1px solid ${isSelected ? "var(--primary)" : "rgba(255,255,255,0.08)"}`,
-                              color: isSelected ? "#fff" : "var(--text-secondary)"
+                              background: isSelected ? "var(--gradient-cta)" : "var(--surface-dark-raised)",
+                              border: `1px solid ${isSelected ? "var(--marigold)" : "var(--border-warm)"}`,
+                              color: isSelected ? "var(--ink-night)" : "var(--diya-cream)"
                             }}
                           >
                             {AMENITY_ICONS[a]}
@@ -1157,8 +1168,8 @@ export default function App() {
                       Clear All
                     </button>
                     <button 
-                      className="btn-primary" 
-                      style={{ padding: "6px 14px", borderRadius: "var(--radius-sm)", border: "none", fontSize: "12px", cursor: "pointer" }}
+                      className="clay-button" 
+                      style={{ padding: "6px 16px", fontSize: "12px" }}
                       onClick={() => setShowFilters(false)}
                     >
                       Apply Filters
@@ -1168,92 +1179,97 @@ export default function App() {
               )}
             </div>
             
-            {/* Right Asset Graphic: Real PG Building Image with Neo Glass Frame */}
+            {/* Right Asset Graphic: Real PG Building Image framed in Clay Card with Toran Banner */}
             <div style={{ display: "flex", justifyContent: "center", position: "relative" }}>
               <div 
-                className="animate-float glass-card-3d" 
+                className="animate-float clay-card" 
                 style={{ 
                   width: "100%", 
                   maxWidth: "420px", 
-                  aspectRatio: "4/3",
-                  borderRadius: "24px",
+                  borderRadius: "20px",
                   overflow: "hidden",
-                  boxShadow: "0 25px 60px rgba(99, 102, 241, 0.25), inset 0 1px 1px rgba(255,255,255,0.3)",
-                  border: "2px solid rgba(255,255,255,0.15)",
                   position: "relative"
                 }}
               >
-                <img 
-                  src="/real_pg_hero.webp" 
-                  alt="Dusra Ghar Real PG Building" 
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }} 
-                />
-                
-                {/* Floating Glass Status Overlay */}
-                <div style={{ 
-                  position: "absolute", 
-                  bottom: "16px", 
-                  left: "16px", 
-                  right: "16px", 
-                  background: "rgba(10, 15, 28, 0.75)", 
-                  backdropFilter: "blur(12px)", 
-                  border: "1px solid rgba(255, 255, 255, 0.15)", 
-                  borderRadius: "14px", 
-                  padding: "10px 14px", 
-                  display: "flex", 
-                  alignItems: "center", 
-                  justifyContent: "space-between" 
-                }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "var(--accent-green)", boxShadow: "0 0 10px var(--accent-green)", animation: "pulse-glow 1.5s infinite" }}></span>
-                    <span style={{ fontSize: "12px", fontWeight: "700", color: "#fff" }}>Verified Real DTU PG</span>
+                {/* Toran Garland Strip on top of photo frame */}
+                <ToranDivider style={{ height: "24px", opacity: 1 }} />
+
+                <div style={{ aspectRatio: "4/3", width: "100%", position: "relative" }}>
+                  <img 
+                    src="/real_pg_hero.webp" 
+                    alt="Dusra Ghar Real PG Building" 
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                  />
+                  
+                  {/* Floating Status Overlay */}
+                  <div style={{ 
+                    position: "absolute", 
+                    bottom: "14px", 
+                    left: "14px", 
+                    right: "14px", 
+                    background: "rgba(29, 23, 18, 0.88)", 
+                    backdropFilter: "blur(8px)", 
+                    border: "1px solid var(--border-warm)", 
+                    borderRadius: "14px", 
+                    padding: "10px 14px", 
+                    display: "flex", 
+                    alignItems: "center", 
+                    justifyContent: "space-between" 
+                  }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "var(--tulsi-green)", boxShadow: "0 0 8px var(--tulsi-green)", animation: "pulse-glow 1.5s infinite" }}></span>
+                      <span style={{ fontSize: "12px", fontWeight: "700", color: "var(--diya-cream)" }}>Verified Real DTU PG</span>
+                    </div>
+                    <span className="badge-trust">Zero Brokerage</span>
                   </div>
-                  <span style={{ fontSize: "11px", fontWeight: "800", color: "var(--secondary)", background: "rgba(168, 85, 247, 0.15)", padding: "3px 10px", borderRadius: "100px", border: "1px solid rgba(168,85,247,0.3)" }}>Zero Brokerage</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* core advantages banners ("Why Us") */}
+          <ToranDivider />
+
+          {/* Core Advantages Banners ("Why Us") */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "20px" }}>
             {[
-              { icon: <TrendingDown size={22} style={{ color: "var(--accent-green)" }} />, title: "Zero Brokerage Fees", desc: "No middleman, no deposit cuts. Deal directly with PG managers and save up to ₹15,000 upfront." },
-              { icon: <Video size={22} style={{ color: "var(--primary)" }} />, title: "100% Video Tours", desc: "Walk through rooms virtually with direct clips. Know the exact vibe of the house before you travel." },
-              { icon: <Users size={22} style={{ color: "var(--secondary)" }} />, title: "Student Verified Rates", desc: "We track and contrast actual building base rates vs negotiated student prices so you get the best deal." }
+              { icon: <TrendingDown size={24} style={{ color: "var(--tulsi-green)" }} />, title: "Zero Brokerage Fees", desc: "No middleman, no deposit cuts. Deal directly with PG managers and save up to ₹15,000 upfront." },
+              { icon: <Video size={24} style={{ color: "var(--marigold)" }} />, title: "100% Video Tours", desc: "Walk through rooms virtually with direct clips. Know the exact vibe of the house before you travel." },
+              { icon: <Users size={24} style={{ color: "var(--khapra-red)" }} />, title: "Student Verified Rates", desc: "We track and contrast actual building base rates vs negotiated student prices so you get the best deal." }
             ].map((f, i) => (
-              <div key={i} className="why-card">
-                <div style={{ width: "42px", height: "42px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "14px", border: "1px solid rgba(255,255,255,0.05)" }}>
+              <div key={i} className="clay-card" style={{ padding: "24px" }}>
+                <div className="clay-icon" style={{ marginBottom: "16px" }}>
                   {f.icon}
                 </div>
-                <h4 style={{ fontWeight: "700", fontSize: "16px", color: "#fff", marginBottom: "6px" }}>{f.title}</h4>
-                <p style={{ color: "var(--text-secondary)", fontSize: "13px", lineHeight: "1.5" }}>{f.desc}</p>
+                <h4 className="font-display" style={{ fontWeight: "700", fontSize: "18px", color: "var(--diya-cream)", marginBottom: "8px" }}>{f.title}</h4>
+                <p style={{ color: "var(--muted)", fontSize: "14px", lineHeight: "1.5" }}>{f.desc}</p>
               </div>
             ))}
           </div>
 
           {/* INTERACTIVE VIBE MATCHING WIDGET */}
-          <div className="glass-panel" style={{ 
+          <div className="clay-card" style={{ 
             borderRadius: "var(--radius-lg)", 
-            padding: "28px", 
-            boxShadow: "0 15px 40px rgba(0,0,0,0.3)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            padding: "32px", 
             textAlign: "left"
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
-              <div style={{ background: "rgba(168,85,247,0.1)", width: "32px", height: "32px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Compass size={16} style={{ color: "var(--secondary)" }} />
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
+              <div className="clay-icon" style={{ width: "40px", height: "40px", borderRadius: "12px" }}>
+                <Compass size={20} style={{ color: "var(--marigold)" }} />
               </div>
-              <h3 style={{ fontSize: "20px", fontWeight: "800", color: "#fff" }}>Interactive Vibe Matcher</h3>
+              <h3 className="font-display" style={{ fontSize: "24px", fontWeight: "700", color: "var(--diya-cream)" }}>
+                DTU Neighborhood Vibe Matcher
+              </h3>
             </div>
-            <p style={{ color: "var(--text-secondary)", fontSize: "14px", marginBottom: "20px" }}>
-              Select your study/lifestyle vibe and budget limits. We'll run a match algorithm to isolate perfect PGs.
+            
+            <p style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "24px" }}>
+              Select your room vibe and budget range to instantly pin matching PGs on our DTU campus map.
             </p>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px", marginBottom: "24px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "24px", marginBottom: "28px" }}>
               {/* Choose Vibe */}
               <div>
-                <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--text-secondary)", textTransform: "uppercase", marginBottom: "8px", letterSpacing: "0.5px" }}>Choose your room vibe</label>
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--muted)", textTransform: "uppercase", marginBottom: "10px", letterSpacing: "0.5px" }}>Choose room vibe</label>
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                   {[
                     { id: "social", label: "🦋 Social Butterfly", sub: "WiFi, meals, social roommates" },
                     { id: "quiet", label: "📚 Quiet Deep Focus", sub: "Privacy, private bath, security" },
@@ -1263,14 +1279,12 @@ export default function App() {
                     <button
                       key={v.id}
                       onClick={() => setQuizVibe(v.id)}
-                      className="vibe-card-btn"
-                      style={{
-                        borderColor: quizVibe === v.id ? "var(--primary)" : "rgba(255,255,255,0.06)",
-                        background: quizVibe === v.id ? "rgba(99,102,241,0.05)" : "rgba(255,255,255,0.01)"
-                      }}
+                      className={`vibe-card-btn ${quizVibe === v.id ? "selected" : ""}`}
                     >
-                      <div style={{ fontWeight: "700", fontSize: "13px", color: "#fff" }}>{v.label}</div>
-                      <div style={{ fontSize: "11px", color: "var(--text-secondary)", marginTop: "2px" }}>{v.sub}</div>
+                      <div>
+                        <div style={{ fontWeight: "700", fontSize: "13px" }}>{v.label}</div>
+                        <div style={{ fontSize: "11px", opacity: 0.8, marginTop: "2px" }}>{v.sub}</div>
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -1278,8 +1292,8 @@ export default function App() {
 
               {/* Choose Budget */}
               <div>
-                <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--text-secondary)", textTransform: "uppercase", marginBottom: "8px", letterSpacing: "0.5px" }}>Choose monthly budget</label>
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <label style={{ display: "block", fontSize: "11px", fontWeight: "700", color: "var(--muted)", textTransform: "uppercase", marginBottom: "10px", letterSpacing: "0.5px" }}>Choose monthly budget</label>
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                   {[
                     { id: "low", label: "💸 Pocket Friendly", sub: "Under ₹8,000/month" },
                     { id: "mid", label: "💎 Comfort Living", sub: "Under ₹12,000/month" },
@@ -1288,14 +1302,12 @@ export default function App() {
                     <button
                       key={b.id}
                       onClick={() => setQuizBudget(b.id)}
-                      className="vibe-card-btn"
-                      style={{
-                        borderColor: quizBudget === b.id ? "var(--secondary)" : "rgba(255,255,255,0.06)",
-                        background: quizBudget === b.id ? "rgba(168,85,247,0.05)" : "rgba(255,255,255,0.01)"
-                      }}
+                      className={`vibe-card-btn ${quizBudget === b.id ? "selected" : ""}`}
                     >
-                      <div style={{ fontWeight: "700", fontSize: "13px", color: "#fff" }}>{b.label}</div>
-                      <div style={{ fontSize: "11px", color: "var(--text-secondary)", marginTop: "2px" }}>{b.sub}</div>
+                      <div>
+                        <div style={{ fontWeight: "700", fontSize: "13px" }}>{b.label}</div>
+                        <div style={{ fontSize: "11px", opacity: 0.8, marginTop: "2px" }}>{b.sub}</div>
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -1303,31 +1315,31 @@ export default function App() {
             </div>
 
             {quizMatchMsg && (
-              <div style={{ background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)", borderRadius: "var(--radius-sm)", padding: "12px", fontSize: "13px", color: "var(--accent-green)", fontWeight: "600", marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px" }}>
-                <CheckCircle size={16} />
+              <div style={{ background: "rgba(76, 122, 94, 0.15)", border: "1px solid var(--tulsi-green)", borderRadius: "var(--radius-sm)", padding: "12px 16px", fontSize: "13px", color: "var(--diya-cream)", fontWeight: "600", marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <CheckCircle size={16} style={{ color: "var(--tulsi-green)" }} />
                 {quizMatchMsg}
               </div>
             )}
 
             <button 
-              className="btn-primary"
-              style={{ width: "100%", padding: "14px", borderRadius: "var(--radius-md)", border: "none", cursor: "pointer", fontWeight: "800", fontSize: "14px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
+              className="clay-button"
+              style={{ width: "100%", padding: "16px", fontSize: "15px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
               onClick={handleVibeMatch}
             >
-              Run Vibe Matcher Algorithm
-              <ArrowRight size={16} />
+              Find My PG
+              <ArrowRight size={18} />
             </button>
           </div>
 
           {/* LISTINGS RESULTS GRID */}
           <div ref={resultsRef} style={{ scrollMarginTop: "24px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-              <div style={{ color: "var(--text-secondary)", fontSize: "14px", fontWeight: "600" }}>
-                ⚡ Showing <span style={{ color: "#fff", fontWeight: "800" }}>{filtered.length}</span> PG{filtered.length !== 1 ? "s" : ""} match{filtered.length !== 1 ? "es" : ""} near campus
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+              <div style={{ color: "var(--muted)", fontSize: "15px", fontWeight: "600" }}>
+                ⚡ Showing <span className="price-mono" style={{ color: "var(--marigold)", fontWeight: "700" }}>{filtered.length}</span> verified PG{filtered.length !== 1 ? "s" : ""} near campus
               </div>
               {(filterGender !== "All" || filterMin || filterMax || selectedVibeTags.length > 0) && (
                 <button 
-                  style={{ background: "transparent", border: "none", color: "var(--primary)", fontSize: "13px", fontWeight: "700", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}
+                  style={{ background: "transparent", border: "none", color: "var(--marigold)", fontSize: "13px", fontWeight: "700", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}
                   onClick={() => {
                     setFilterGender("All");
                     setFilterMin("");
@@ -1343,10 +1355,10 @@ export default function App() {
             </div>
 
             {filtered.length === 0 ? (
-              <div className="glass-panel" style={{ textAlign: "center", padding: "60px 20px", borderRadius: "var(--radius-lg)" }}>
+              <div className="clay-card" style={{ textAlign: "center", padding: "60px 20px" }}>
                 <div style={{ fontSize: "40px", marginBottom: "12px" }}>🔍</div>
-                <h3 style={{ fontSize: "18px", fontWeight: "700", marginBottom: "4px" }}>No PGs matching filters</h3>
-                <p style={{ color: "var(--text-secondary)", fontSize: "14px" }}>Try removing filters or expanding your search budget.</p>
+                <h3 className="font-display" style={{ fontSize: "20px", fontWeight: "700", marginBottom: "4px" }}>No PGs matching filters</h3>
+                <p style={{ color: "var(--muted)", fontSize: "14px" }}>Try removing filters or expanding your search budget.</p>
               </div>
             ) : (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "24px" }}>
@@ -1359,30 +1371,19 @@ export default function App() {
                   return (
                     <div 
                       key={pg.id} 
-                      className="glass-panel animate-fade-in"
+                      className="clay-card animate-fade-in"
                       style={{ 
-                        borderRadius: "var(--radius-lg)", 
+                        borderRadius: "20px", 
                         overflow: "hidden", 
                         cursor: "pointer", 
-                        transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
                         display: "flex",
                         flexDirection: "column",
                         height: "100%"
                       }}
                       onClick={() => { setSelectedPg(pg); setPhotoIdx(0); }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "translateY(-4px)";
-                        e.currentTarget.style.borderColor = "var(--card-border-hover)";
-                        e.currentTarget.style.boxShadow = "0 8px 30px rgba(99, 102, 241, 0.15)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "none";
-                        e.currentTarget.style.borderColor = "var(--card-border)";
-                        e.currentTarget.style.boxShadow = "none";
-                      }}
                     >
                       {/* PHOTO PREVIEW */}
-                      <div style={{ width: "100%", height: "180px", background: "rgba(255,255,255,0.02)", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
+                      <div style={{ width: "100%", height: "180px", background: "var(--ink-night)", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
                         {pg.photos?.length > 0 ? (
                           <img 
                             src={pg.photos[0]} 
@@ -1395,20 +1396,9 @@ export default function App() {
                           <div style={{ fontSize: "40px", opacity: 0.6 }}>🏢</div>
                         )}
                         
-                        {/* TOP BADGES */}
+                        {/* GENDER BADGE (Solid ink-night at 85% opacity with diya-cream text) */}
                         <div style={{ position: "absolute", top: "12px", left: "12px", display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                          <span style={{ 
-                            fontSize: "10px", 
-                            fontWeight: "800", 
-                            padding: "4px 10px", 
-                            borderRadius: "100px", 
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px",
-                            background: pg.gender === "Girls" ? "rgba(244,63,94,0.15)" : pg.gender === "Boys" ? "rgba(59,130,246,0.15)" : "rgba(168,85,247,0.15)",
-                            color: pg.gender === "Girls" ? "#fb7185" : pg.gender === "Boys" ? "#60a5fa" : "#c084fc",
-                            border: `1px solid ${pg.gender === "Girls" ? "rgba(244,63,94,0.3)" : pg.gender === "Boys" ? "rgba(59,130,246,0.3)" : "rgba(168,85,247,0.3)"}`,
-                            backdropFilter: "blur(4px)"
-                          }}>
+                          <span className="badge-gender">
                             {pg.gender === "Both" ? "Co-ed" : pg.gender}
                           </span>
                         </div>
@@ -1416,12 +1406,12 @@ export default function App() {
                         {/* INFO BADGES BOTTOM */}
                         <div style={{ position: "absolute", bottom: "10px", right: "12px", display: "flex", gap: "6px" }}>
                           {pg.photos?.length > 1 && (
-                            <span style={{ background: "rgba(0,0,0,0.65)", color: "#fff", fontSize: "10px", fontWeight: "700", borderRadius: "100px", padding: "3px 8px", backdropFilter: "blur(4px)" }}>
+                            <span style={{ background: "rgba(29, 23, 18, 0.9)", color: "var(--diya-cream)", fontSize: "10px", fontWeight: "700", borderRadius: "100px", padding: "3px 8px" }}>
                               +{pg.photos.length - 1} Photos
                             </span>
                           )}
                           {(pg.videoBase64 || pg.videoLink) && (
-                            <span style={{ background: "rgba(99,102,241,0.85)", color: "#fff", fontSize: "10px", fontWeight: "700", borderRadius: "100px", padding: "3px 8px", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", gap: "4px" }}>
+                            <span style={{ background: "var(--marigold)", color: "var(--ink-night)", fontSize: "10px", fontWeight: "800", borderRadius: "100px", padding: "3px 8px", display: "flex", alignItems: "center", gap: "4px" }}>
                               <Video size={10} /> Tour
                             </span>
                           )}
@@ -1429,29 +1419,29 @@ export default function App() {
                       </div>
 
                       {/* CONTENT */}
-                      <div style={{ padding: "16px", display: "flex", flexDirection: "column", flexGrow: 1 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px", marginBottom: "4px" }}>
-                          <h4 style={{ fontWeight: "700", fontSize: "16px", color: "#fff", lineHeight: "1.3" }}>{pg.name}</h4>
+                      <div style={{ padding: "20px", display: "flex", flexDirection: "column", flexGrow: 1 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px", marginBottom: "6px" }}>
+                          <h4 className="font-display" style={{ fontWeight: "700", fontSize: "18px", color: "var(--diya-cream)", lineHeight: "1.3" }}>{pg.name}</h4>
                         </div>
                         
                         {/* ADDRESS */}
-                        <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "var(--text-secondary)", fontSize: "12px", marginBottom: "14px" }}>
-                          <MapPin size={12} style={{ color: "var(--text-muted)" }} />
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "var(--muted)", fontSize: "12px", marginBottom: "14px" }}>
+                          <MapPin size={12} style={{ color: "var(--marigold)" }} />
                           <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pg.address}</span>
                         </div>
 
-                        {/* PRICING BLOCK */}
-                        <div style={{ display: "flex", alignItems: "flex-end", flexWrap: "wrap", gap: "6px", marginBottom: "12px" }}>
-                          <span style={{ fontSize: "18px", fontWeight: "800", color: "#fff" }}>
+                        {/* PRICING BLOCK (IBM Plex Mono Data font) */}
+                        <div style={{ display: "flex", alignItems: "flex-end", flexWrap: "wrap", gap: "6px", marginBottom: "14px" }}>
+                          <span className="price-mono" style={{ fontSize: "20px", fontWeight: "700", color: "var(--marigold)" }}>
                             ₹{nego.toLocaleString()}
                           </span>
-                          <span style={{ fontSize: "12px", color: "var(--text-secondary)", fontWeight: "500", paddingBottom: "2px" }}>/mo</span>
+                          <span style={{ fontSize: "12px", color: "var(--muted)", fontWeight: "500", paddingBottom: "2px" }}>/mo</span>
                           {savings > 0 && (
                             <>
-                              <span style={{ fontSize: "11px", color: "var(--text-muted)", textDecoration: "line-through", paddingBottom: "2px", marginLeft: "4px" }}>
+                              <span className="price-mono" style={{ fontSize: "11px", color: "var(--muted)", textDecoration: "line-through", paddingBottom: "2px", marginLeft: "4px" }}>
                                 ₹{actual.toLocaleString()}
                               </span>
-                              <span style={{ fontSize: "10px", color: "var(--accent-green)", fontWeight: "700", background: "rgba(16,185,129,0.1)", padding: "2px 6px", borderRadius: "4px", marginLeft: "4px", border: "1px solid rgba(16,185,129,0.2)" }}>
+                              <span className="badge-trust" style={{ fontSize: "10px", padding: "2px 6px", borderRadius: "4px", marginLeft: "4px" }}>
                                 -{percentSaved}%
                               </span>
                             </>
@@ -1459,20 +1449,20 @@ export default function App() {
                         </div>
 
                         {/* AMENITIES BADGES */}
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "auto", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "12px" }}>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "auto", borderTop: "1px solid var(--border-warm)", paddingTop: "14px" }}>
                           {(pg.amenities || []).slice(0, 3).map(a => (
                             <span 
                               key={a} 
                               style={{ 
                                 fontSize: "11px", 
-                                color: "var(--text-secondary)", 
-                                background: "rgba(255,255,255,0.03)", 
-                                padding: "2px 8px", 
+                                color: "var(--muted)", 
+                                background: "var(--surface-dark-raised)", 
+                                padding: "3px 10px", 
                                 borderRadius: "100px", 
                                 display: "inline-flex", 
                                 alignItems: "center", 
                                 gap: "4px",
-                                border: "1px solid rgba(255,255,255,0.04)"
+                                border: "1px solid var(--border-warm)"
                               }}
                             >
                               {AMENITY_ICONS[a]}
@@ -1480,7 +1470,7 @@ export default function App() {
                             </span>
                           ))}
                           {(pg.amenities || []).length > 3 && (
-                            <span style={{ fontSize: "11px", color: "var(--text-muted)", background: "rgba(255,255,255,0.03)", padding: "2px 8px", borderRadius: "100px" }}>
+                            <span style={{ fontSize: "11px", color: "var(--muted)", background: "var(--surface-dark-raised)", padding: "3px 8px", borderRadius: "100px", border: "1px solid var(--border-warm)" }}>
                               +{(pg.amenities || []).length - 3}
                             </span>
                           )}
@@ -1493,12 +1483,14 @@ export default function App() {
             )}
           </div>
 
+          <ToranDivider />
+
           {/* STUDENT TESTIMONIALS SECTION */}
-          <div style={{ textAlign: "left", marginTop: "24px" }}>
-            <h3 style={{ fontSize: "22px", fontWeight: "800", color: "#fff", marginBottom: "6px", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span style={{ fontSize: "20px" }}>💬</span> Vetted by DTU Seniors
+          <div style={{ textAlign: "left" }}>
+            <h3 className="font-display" style={{ fontSize: "24px", fontWeight: "700", color: "var(--diya-cream)", marginBottom: "6px", display: "flex", alignItems: "center", gap: "10px" }}>
+              <span style={{ fontSize: "22px" }}>💬</span> Vetted by DTU Seniors
             </h3>
-            <p style={{ color: "var(--text-secondary)", fontSize: "14px", marginBottom: "24px" }}>
+            <p style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "24px" }}>
               Here is what senior batch students have to say about finding accommodation through Dusra Ghar.
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px" }}>
@@ -1507,17 +1499,17 @@ export default function App() {
                 { name: "Riya Gupta", branch: "ECE '26", quote: "Finding secure girls' PGs near Gate 2 with no strict curfew was incredibly easy. The WiFi speed tags are actually verified." },
                 { name: "Aryan Goel", branch: "IT '24", quote: "Negotiating is stressful. Knowing the pre-negotiated rate before I called the manager gave me massive leverage. Essential for freshers!" }
               ].map((t, i) => (
-                <div key={i} className="glass-panel" style={{ padding: "20px", borderRadius: "var(--radius-md)", border: "1px solid rgba(255,255,255,0.04)" }}>
-                  <p style={{ color: "var(--text-secondary)", fontSize: "13px", fontStyle: "italic", lineHeight: "1.6", marginBottom: "16px" }}>
+                <div key={i} className="clay-card" style={{ padding: "20px" }}>
+                  <p style={{ color: "var(--muted)", fontSize: "13px", fontStyle: "italic", lineHeight: "1.6", marginBottom: "16px" }}>
                     "{t.quote}"
                   </p>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "800", fontSize: "12px", color: "#fff" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div className="clay-icon" style={{ width: "36px", height: "36px", borderRadius: "50%", fontWeight: "800", fontSize: "14px", color: "var(--marigold)" }}>
                       {t.name[0]}
                     </div>
                     <div>
-                      <div style={{ fontWeight: "700", fontSize: "13px", color: "#fff" }}>{t.name}</div>
-                      <div style={{ fontSize: "11px", color: "var(--primary)", fontWeight: "600" }}>DTU {t.branch}</div>
+                      <div style={{ fontWeight: "700", fontSize: "14px", color: "var(--diya-cream)" }}>{t.name}</div>
+                      <div style={{ fontSize: "11px", color: "var(--marigold)", fontWeight: "600" }}>DTU {t.branch}</div>
                     </div>
                   </div>
                 </div>
